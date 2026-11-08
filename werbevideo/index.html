@@ -440,7 +440,7 @@ const LOGO_C = mk(W, 520), lctx = LOGO_C.getContext('2d');
 function renderLogoLayer() {
   lctx.clearRect(0, 0, W, 520);
   if (LOGO) {
-    const bw = 640, bh = 360, k = Math.min(bw / LOGO.naturalWidth || bw, bh / LOGO.naturalHeight || bh);
+    const bw = 700, bh = 470, k = Math.min(bw / LOGO.naturalWidth || bw, bh / LOGO.naturalHeight || bh);
     const w = LOGO.naturalWidth * k, h = LOGO.naturalHeight * k;
     lctx.drawImage(LOGO, CX - w / 2, 260 - h / 2, w, h);
     return { x0: CX - w / 2, x1: CX + w / 2 };
@@ -819,9 +819,15 @@ function scene4(g, t) {
 function scene5bg(g, t) {
   g.fillStyle = '#010205'; g.fillRect(0, 0, W, H);
   const p = sstep(22.0, 23.5, t);
-  const gl = g.createRadialGradient(CX, 760, 0, CX, 760, 900);
+  const gl = g.createRadialGradient(CX, 700, 0, CX, 700, 900);
   gl.addColorStop(0, `rgba(18,60,110,${.55 * p})`); gl.addColorStop(.5, `rgba(8,26,52,${.35 * p})`); gl.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = gl; g.fillRect(0, 0, W, H);
+  // Gegenlicht hinter dem Logo, damit seine dunkle Kontur sich vom Schwarz löst
+  const lp = sstep(22.3, 23.4, t);
+  g.save(); g.translate(CX, 640); g.scale(1.45, 1);
+  const bl = g.createRadialGradient(0, 0, 0, 0, 0, 330);
+  bl.addColorStop(0, `rgba(70,160,235,${.42 * lp})`); bl.addColorStop(.55, `rgba(30,95,170,${.2 * lp})`); bl.addColorStop(1, 'rgba(10,40,90,0)');
+  g.fillStyle = bl; g.fillRect(-330, -330, 660, 660); g.restore();
   // ruhige Kaustik-Lichtlinien am Boden
   g.save(); g.globalCompositeOperation = 'lighter';
   for (let i = 0; i < 26; i++) {

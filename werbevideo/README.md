@@ -14,15 +14,14 @@ und richtig geschrieben, die Steine verzerren nicht, und alle Szenen haben diese
 
 ## Dein Logo einsetzen (wichtig)
 
-Im Repository lag noch kein Logo. Bis dahin zeigt der Abschluss eine **Platzhalter-Wortmarke**
-(„AQUAFORCE NORD“).
+Das Logo liegt in `assets/logo-original.png` (wie geliefert) und `assets/logo.png` (nur der weiße
+Außenhintergrund entfernt, damit es auf Dunkel steht; Logo selbst unverändert).
 
-1. Logo als `werbevideo/assets/logo.png` ablegen (transparenter Hintergrund, mindestens 1200 px breit;
-   `.svg`, `.webp` und `.jpg` werden auch erkannt).
-2. `node render.mjs` erneut ausführen.
+Neue Logo-Version: als `werbevideo/assets/logo.png` ablegen (am besten mit transparentem
+Hintergrund) und `node render.mjs` erneut ausführen.
 
 Das Logo wird **unverändert** eingesetzt: kein Umfärben, kein Verzerren, das Seitenverhältnis bleibt
-erhalten. Es wird nur in eine Box von max. 640 × 360 px eingepasst. Die Lichtkante beim Reveal läuft
+erhalten. Es wird nur in eine Box von max. 700 × 470 px eingepasst. Die Lichtkante beim Reveal läuft
 einmal kurz darüber, danach steht das Logo im Original.
 
 ## Ablauf

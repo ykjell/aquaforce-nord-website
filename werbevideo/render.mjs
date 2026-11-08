@@ -9,9 +9,11 @@
 // Voraussetzungen: Node 18+, playwright (Chromium), ffmpeg im PATH.
 // Für die Tonspur vorher: python3 audio.py  → soundtrack.wav
 import { createRequire } from 'node:module';
-import { existsSync, writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync, readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { extname, normalize } from 'node:path';
 import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
 const { chromium } = createRequire(import.meta.url)('playwright');
@@ -24,11 +26,21 @@ const stills = opt('stills', null);
 const out = resolve(opt('out', join(here, overlay ? 'aquaforce-nord-overlay.mov' : 'aquaforce-nord-werbespot.mp4')));
 const audio = has('no-audio') || overlay ? null : resolve(opt('audio', join(here, 'soundtrack.wav')));
 
+// Kleiner HTTP-Server: per file:// geladene Bilder (Logo) würden den Canvas-Export sperren
+const MIME = { '.html': 'text/html', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.wav': 'audio/wav' };
+const server = createServer((req, res) => {
+  const f = join(here, normalize(decodeURIComponent(req.url.split('?')[0])).replace(/^([/\\]|\.\.)+/, '') || 'index.html');
+  if (!f.startsWith(here) || !existsSync(f)) { res.writeHead(404); res.end(); return; }
+  res.writeHead(200, { 'Content-Type': MIME[extname(f)] || 'application/octet-stream' }); res.end(readFileSync(f));
+}).listen(0, '127.0.0.1');
+await new Promise(r => server.once('listening', r));
+const base = `http://127.0.0.1:${server.address().port}/`;
+
 const browser = await chromium.launch({ args: ['--disable-gpu-vsync', '--force-color-profile=srgb'] });
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
 page.on('console', m => { if (m.type() === 'error') console.error('[page]', m.text()); });
 const q = ['export', overlay && 'layer=overlay', has('safe') && 'safe'].filter(Boolean).join('&');
-await page.goto(pathToFileURL(join(here, 'index.html')).href + '?' + q);
+await page.goto(base + 'index.html?' + q);
 console.log('Texturen werden berechnet …');
 await page.evaluate(() => window.ready);
 const fps = Number(opt('fps', await page.evaluate(() => window.FPS)));
@@ -42,7 +54,7 @@ if (stills) {
     const f = join(here, `still-${String(s).replace('.', '_')}.png`);
     writeFileSync(f, await grab(s)); console.log(f);
   }
-  await browser.close(); process.exit(0);
+  await browser.close(); server.close(); process.exit(0);
 }
 
 const ff = ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-'];
@@ -65,4 +77,5 @@ for (let f = 0; f < total; f++) {
 proc.stdin.end();
 await done;
 await browser.close();
+server.close();
 console.log(`\r${total}/${total} Frames gerendert → ${out}`);
