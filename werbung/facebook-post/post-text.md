@@ -16,7 +16,7 @@ Ich bin [Vorname] und habe mich mit **AquaForce-Nord** auf professionelle Hochdr
 
 Meldet euch einfach per Nachricht, telefonisch oder per Mail. Ich komme vorbei und schaue mir die Fläche an.
 
-📞 [Telefonnummer]
-✉️ kjellm21@gmail.com
+📞 +49 176 438 57587
+✉️ info@aquaforce-nord.de
 
 Ich freue mich, von euch zu hören! 💧
