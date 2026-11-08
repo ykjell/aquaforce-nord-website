@@ -6,7 +6,7 @@ Bild: `vorher-nachher.png` (1080 × 1350, Format 4:5)
 
 Moin aus Bordesholm! 👋
 
-Ich bin [Vorname] und habe mich mit **AquaForce-Nord** auf professionelle Hochdruckreinigung spezialisiert. Moos, Grünbelag und Unkraut in den Fugen bei euch auf Terrasse, Einfahrt oder Pflaster? Das bekomme ich wieder richtig sauber.
+Ich bin [Vorname] und habe mich mit **AquaForce-Nord** auf professionelle Hochdruckreinigung spezialisiert. Eure Terrasse, Einfahrt oder euer Pflaster sieht nicht mehr schön aus? Ich mache sie wieder richtig sauber.
 
 📸 Auf dem Bild seht ihr ein Pflaster, das ich gereinigt habe: links vorher, rechts nachher.
 
