@@ -878,14 +878,14 @@ function scene5fg(g, t) {
   }
   // Botschaft
   const sz = fitSize(g, 'Deine Fläche. Wie neu.', 700, 92, TEXT_MAX - 60);
-  line(g, ['Deine', 'Fläche.', { text: 'Wie', grad: 1 }, { text: 'neu.', grad: 1 }], 1015, sz, 700, t, 24.15, null, { stagger: .11 });
+  line(g, ['Deine', 'Fläche.', { text: 'Wie', grad: 1 }, { text: 'neu.', grad: 1 }], 990, sz, 700, t, 24.15, null, { stagger: .11 });
   // Call-to-Action als Pill
   const ck = easeOutExpo((t - 25.55) / 1.0);
   if (ck > 0) {
     const txt = 'Jetzt Hochdruckreinigung anfragen.';
     const fs = fitSize(g, txt, 600, 38, TEXT_MAX - 130);
     setFont(g, fs, 600, -fs * .01); const tw = g.measureText(txt).width;
-    const pw = tw + 84, ph = fs + 46, py = 1150 + (1 - ck) * 24;
+    const pw = tw + 84, ph = fs + 46, py = 1118 + (1 - ck) * 24;
     g.save(); g.globalAlpha = ck;
     const pg = g.createLinearGradient(CX - pw / 2, 0, CX + pw / 2, 0);
     pg.addColorStop(0, '#1aa6e6'); pg.addColorStop(1, '#2b6fff');
@@ -904,8 +904,11 @@ function scene5fg(g, t) {
     g.fillStyle = '#fff'; setFont(g, fs, 600, -fs * .01); g.fillText(txt, CX - tw / 2, py + fs * .36);
     g.restore();
   }
-  line(g, ['Unverbindlich', '&', 'fair.'], 1290, 34, 500, t, 26.55, null, { color: 'rgba(205,218,232,.82)', stagger: .07, track: .5 });
-  line(g, ['Bordesholm', '·', 'Schleswig-Holstein'], 1350, 25, 500, t, 27.15, null, { color: 'rgba(140,156,175,.75)', stagger: .05, track: 2 });
+  line(g, ['Unverbindlich', '&', 'fair.'], 1226, 32, 500, t, 26.55, null, { color: 'rgba(205,218,232,.82)', stagger: .07, track: .5 });
+  // Kontakt
+  line(g, ['+49 176 438 57587'], 1298, 40, 650, t, 26.95, null, { track: .5 });
+  line(g, ['info@aquaforce-nord.de'], 1348, 31, 500, t, 27.15, null, { color: 'rgba(155,215,250,.95)', track: .3 });
+  line(g, ['Bordesholm', '·', 'Schleswig-Holstein'], 1396, 22, 500, t, 27.45, null, { color: 'rgba(140,156,175,.7)', stagger: .05, track: 2 });
 }
 
 // ── Komposition ─────────────────────────────────────────────────────────────
