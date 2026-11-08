@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AquaForce-Nord Werbespot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=block" rel="stylesheet">
+<style>
+  :root { --bg:#000; --fg:#e8edf3; --muted:#7c8796; --btn:#141a22; --accent:#4cc9f0; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:14px Inter,system-ui,sans-serif; }
+  body { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:10px 16px; }
+  canvas { height:calc(100vh - 80px); max-width:100%; aspect-ratio:9/16; background:#000; border-radius:12px; display:block; cursor:pointer; }
+  .bar { display:flex; gap:8px; align-items:center; width:min(100%, 460px); flex-wrap:wrap; }
+  .bar button { background:var(--btn); color:#fff; border:0; border-radius:8px; padding:6px 12px; font:inherit; cursor:pointer; }
+  .bar input { flex:1; accent-color:var(--accent); min-width:120px; }
+  .bar span { font-variant-numeric:tabular-nums; color:var(--muted); width:44px; text-align:right; }
+  #status { color:var(--muted); }
+  body.export { padding:0; display:block; background:transparent; }
+  body.export .bar, body.export #status { display:none; }
+  body.export canvas { height:auto; width:1080px; border-radius:0; background:transparent; }
+</style>
+</head>
+<body>
+<div id="status">Texturen werden berechnet …</div>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div class="bar">
+  <button id="play">Pause</button>
+  <button id="safe" title="Taste S">Safe Zones</button>
+  <input id="seek" type="range" min="0" max="30" step="0.01" value="0">
+  <span id="time">0.00</span>
+</div>
+<audio id="music" src="soundtrack.wav" preload="auto"></audio>
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+//  AquaForce-Nord · Premium-Werbespot · 30 s · 1080×1920 · 30 fps
+//
+//  Komplett prozedural: Steintexturen (Heightmap → Normalen → Licht), eine
+//  geneigte Lochkamera über der Bodenebene, Wasserstrahl als 3D-Partikel mit
+//  Zeitlupe, Typografie. render(t) ist deterministisch → MP4 via render.mjs.
+//
+//  Szenen
+//   0.0– 4.0  Lichtstrahl, Tropfen, „Schmutz hinterlässt Spuren."
+//   4.0– 9.0  Verschmutzte Terrassenplatte, Streiflicht, Kamerafahrt
+//   9.0–16.0  Wasserstrahl reinigt die Fläche (Zeitlupe 10.4–13.6)
+//  16.0–22.0  Ergebnis: Terrassen. / Einfahrten. / Pflasterflächen.
+//  22.0–30.0  Logo-Reveal, „Deine Fläche. Wie neu.", Call-to-Action
+//
+//  Logo: assets/logo.png (oder .svg) wird unverändert eingesetzt.
+//  ?layer=overlay → nur Schrift + Logo auf Transparenz (für Higgsfield-Footage)
+// ─────────────────────────────────────────────────────────────────────────────
+const W = 1080, H = 1920, FPS = 30, DUR = 30;
+const CX = 530;                     // optische Mitte (rechte UI-Spalte meiden)
+const TEXT_MAX = 720;               // max. Textbreite → x 170 … 890
+const params = new URLSearchParams(location.search);
+const EXPORT = params.has('export');
+const OVERLAY = params.get('layer') === 'overlay';
+if (EXPORT) document.body.classList.add('export');
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const FONT = '"Inter", "Inter Display", "SF Pro Display", system-ui, sans-serif';
+
+// ── Helfer ──────────────────────────────────────────────────────────────────
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const sstep = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
+const ease = k => { k = clamp(k); return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+const easeOut = k => 1 - Math.pow(1 - clamp(k), 3);
+const easeOutExpo = k => (k = clamp(k)) === 1 ? 1 : 1 - Math.pow(2, -10 * k);
+const env = (t, a, b, fi, fo) => sstep(a, a + fi, t) * (1 - sstep(b - fo, b, t));
+function rng(seed) {
+  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const hash = i => rng(i * 7919 + 17)();
+function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+
+// ── Prozedurale Steintexturen ───────────────────────────────────────────────
+const TW = 2400, TH = 3200, NPX = TW * TH;
+
+// kachelbares (in x) Value-Noise als Feld über die ganze Textur
+function noiseField(seed, cellsX, octaves, gain = .5) {
+  const out = new Float32Array(NPX);
+  let amp = 1, norm = 0, cx = cellsX;
+  const r = rng(seed);
+  for (let o = 0; o < octaves; o++) {
+    const cs = TW / cx, cy = Math.ceil(TH / cs) + 2;
+    const g = new Float32Array(cx * cy);
+    for (let i = 0; i < g.length; i++) g[i] = r();
+    for (let y = 0; y < TH; y++) {
+      const fy = y / cs, iy = fy | 0; let ty = fy - iy; ty = ty * ty * (3 - 2 * ty);
+      const r0 = iy * cx, r1 = (iy + 1) * cx, row = y * TW;
+      for (let x = 0; x < TW; x++) {
+        const fx = x / cs, ix = fx | 0; let tx = fx - ix; tx = tx * tx * (3 - 2 * tx);
+        const ix1 = (ix + 1) % cx;
+        const a = g[r0 + ix] + (g[r0 + ix1] - g[r0 + ix]) * tx;
+        const b = g[r1 + ix] + (g[r1 + ix1] - g[r1 + ix]) * tx;
+        out[row + x] += (a + (b - a) * ty) * amp;
+      }
+    }
+    norm += amp; amp *= gain; cx *= 2;
+  }
+  for (let i = 0; i < NPX; i++) out[i] /= norm;
+  return out;
+}
+
+// Verlegemuster zeichnen → {id: scharf, bevel: weichgezeichnet}
+function layout(kind) {
+  const P = 64, c = mk(TW + 2 * P, TH), g = c.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, c.width, c.height);
+  const r = rng(kind.length * 1013 + 7);
+  const stone = (x, y, w, h, rad = 3, rot = 0) => {
+    g.fillStyle = `rgb(255,${(r() * 255) | 0},${(r() * 255) | 0})`;
+    for (const off of [-TW, 0, TW]) {
+      g.save(); g.translate(P + off + x + w / 2, y + h / 2); g.rotate(rot);
+      g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, rad); g.fill(); g.restore();
+    }
+  };
+  let blur;
+  if (kind === 'slabs') {               // Terrassenplatten 50×50 cm, Halbverband
+    const S = 400, gap = 7;
+    for (let row = 0; row * S < TH + S; row++)
+      for (let col = -1; col * S < TW + S; col++) {
+        const x = col * S + (row % 2 ? S / 2 : 0);
+        stone(x + gap / 2, row * S + gap / 2, S - gap, S - gap, 4);
+      }
+    blur = 4;
+  } else if (kind === 'herring') {      // Betonpflaster im Fischgrätverband
+    const u = 75, gap = 5;
+    for (let s = -40; s <= 40; s++)
+      for (let k = -60; k <= 60; k++) {
+        const hx = (k + 2 * s) * u, hy = (k - 2 * s) * u;
+        if (hx > -3 * u && hx < TW + u && hy > -3 * u && hy < TH + u) {
+          stone(hx + gap / 2, hy + gap / 2, 2 * u - gap, u - gap, 3);
+          stone(hx + gap / 2, hy + u + gap / 2, u - gap, 2 * u - gap, 3);
+        }
+      }
+    blur = 3;
+  } else {                              // Granit-Kleinpflaster, Reihenverband
+    let y = 0;
+    while (y < TH) {
+      const rh = 82 + r() * 26; const ws = []; let sum = 0;
+      while (sum < TW) { const w = 78 + r() * 64; ws.push(w); sum += w; }
+      const k = TW / sum; let x = r() * 40;
+      for (const w0 of ws) { const w = w0 * k, gp = 9 + r() * 6;
+        stone(x + gp / 2, y + gp / 2, w - gp, rh - gp, 16, (r() - .5) * .06); x += w; }
+      y += rh;
+    }
+    blur = 9;
+  }
+  const id = g.getImageData(P, 0, TW, TH).data;
+  const b = mk(c.width, c.height), bg = b.getContext('2d');
+  bg.filter = `blur(${blur}px)`; bg.drawImage(c, 0, 0);
+  const bevel = bg.getImageData(P, 0, TW, TH).data;
+  return { id, bevel };
+}
+
+let NF;  // geteilte Rauschfelder
+function bakeTextures(kind, variants) {
+  const { id, bevel } = layout(kind);
+  const [N1, N2, N3] = NF;
+  const hgt = new Float32Array(NPX);
+  const wr = rng(99 + kind.length);
+  const white = new Float32Array(NPX); for (let i = 0; i < NPX; i++) white[i] = wr();
+  const dirty = variants.includes('dirty');
+  // Moos/Schmutz-Maske (nur für die verschmutzte Variante)
+  const moss = dirty ? new Float32Array(NPX) : null;
+  const bev = kind === 'cobble' ? 1.6 : 1.0;
+  for (let i = 0; i < NPX; i++) {
+    const m = bevel[i * 4] / 255;
+    let h = Math.pow(m, kind === 'cobble' ? .6 : .9) * bev + (N3[i] - .5) * .22 + (white[i] - .5) * .05 + (N2[i] - .5) * .25;
+    hgt[i] = h;
+    if (dirty) {
+      const joint = 1 - sstep(.35, .85, m);
+      const mm = clamp(joint * 1.2 * sstep(.2, .7, N2[i] + N3[i] * .5) + sstep(.66, .86, N1[i] * .6 + N2[i] * .25 + N3[i] * .35) * .32);
+      moss[i] = mm;
+    }
+  }
+  const out = {};
+  for (const variant of variants) {
+    const tex = mk(TW, TH), tg = tex.getContext('2d');
+    const img = tg.createImageData(TW, TH), d = img.data;
+    const wet = variant === 'wet';
+    const glossC = wet ? mk(TW, TH) : null;
+    const gimg = wet ? glossC.getContext('2d').createImageData(TW, TH) : null, gd = gimg && gimg.data;
+    // Licht in Texturkoordinaten: x rechts, y zur Kamera, z hoch – Streiflicht von hinten links
+    let lx = -.62, ly = -.5, lz = .48; const ln = Math.hypot(lx, ly, lz); lx /= ln; ly /= ln; lz /= ln;
+    for (let y = 0; y < TH; y++) {
+      const ym = y > 0 ? y - 1 : y, yp = y < TH - 1 ? y + 1 : y;
+      for (let x = 0; x < TW; x++) {
+        const i = y * TW + x;
+        const xm = x > 0 ? i - 1 : i + TW - 1, xp = x < TW - 1 ? i + 1 : i - TW + 1;
+        let hh = hgt;
+        let dx = (hh[xm] - hh[xp]), dy = (hh[ym * TW + x] - hh[yp * TW + x]);
+        let mh = 0;
+        if (variant === 'dirty') { mh = moss[i]; dx += (moss[xm] - moss[xp]) * .35; dy += (moss[ym * TW + x] - moss[yp * TW + x]) * .35; }
+        const k = 7;
+        let nx = dx * k, ny = dy * k, nz = 1; const nn = Math.hypot(nx, ny, nz); nx /= nn; ny /= nn; nz /= nn;
+        const dif = Math.max(0, nx * lx + ny * ly + nz * lz);
+        const m = bevel[i * 4] / 255, st = id[i * 4] / 255;
+        const tone = id[i * 4 + 1] / 255 - .5, tone2 = id[i * 4 + 2] / 255;
+        const n1 = N1[i], n2 = N2[i], n3 = N3[i], w = white[i];
+        let r, g, b;
+        const stoneW = sstep(.25, .7, m);
+        if (kind === 'slabs') {         // heller, warmer Betonwerkstein
+          const v = .64 + tone * .07 + (n2 - .5) * .09 + (n3 - .5) * .08 + (w - .5) * .07;
+          r = v * 1.02; g = v * .995; b = v * .955;
+          if (w > .993) { r *= .7; g *= .7; b *= .7; }
+          const jr = .40 + (n3 - .5) * .1; r = lerp(jr, r, stoneW); g = lerp(jr * .96, g, stoneW); b = lerp(jr * .88, b, stoneW);
+        } else if (kind === 'herring') { // Anthrazit, nuanciert
+          const base = tone2 < .55 ? .25 : tone2 < .85 ? .31 : .2;
+          const v = base + tone * .04 + (n3 - .5) * .07 + (w - .5) * .06;
+          r = v; g = v * 1.01; b = v * 1.05;
+          const jr = .5 + (n3 - .5) * .1; r = lerp(jr, r, stoneW); g = lerp(jr * .97, g, stoneW); b = lerp(jr * .9, b, stoneW);
+        } else {                         // Granit: grau / beige / blaugrau, gesprenkelt
+          const pal = tone2 < .4 ? [.50, .50, .50] : tone2 < .65 ? [.56, .51, .45] : tone2 < .85 ? [.42, .45, .49] : [.55, .47, .45];
+          const sp = w > .9 ? -.18 : w > .8 ? .1 : 0;
+          const v = 1 + tone * .12 + (n3 - .5) * .15;
+          r = pal[0] * v + sp; g = pal[1] * v + sp; b = pal[2] * v + sp;
+          const jr = .22 + (n3 - .5) * .08; r = lerp(jr, r, stoneW); g = lerp(jr * .97, g, stoneW); b = lerp(jr * .9, b, stoneW);
+        }
+        if (variant === 'dirty') {
+          // Grauschleier, Algenfilm, schwarze Flechten, Moos in den Fugen
+          const grime = clamp(.55 + (n1 - .5) * 1.1 + (n2 - .5) * .5 + (1 - stoneW) * .3);
+          r = lerp(r, .25, grime * .82); g = lerp(g, .27, grime * .82); b = lerp(b, .22, grime * .82);
+          const algae = sstep(.38, .8, n1 * .75 + n2 * .45 - .1 + (n3 - .5) * .2);
+          r = lerp(r, .19, algae * .7); g = lerp(g, .25, algae * .7); b = lerp(b, .12, algae * .7);
+          const lich = sstep(.78, .81, n3 * .75 + n2 * .35 + (w - .5) * .08) * stoneW;
+          r = lerp(r, .08, lich * .8); g = lerp(g, .085, lich * .8); b = lerp(b, .08, lich * .8);
+          const streak = sstep(.55, .9, N1[(i + TW * 37) % NPX]) * sstep(.4, .7, n2) * .25;
+          r -= streak * .12; g -= streak * .1; b -= streak * .1;
+          const mv = .75 + (w - .5) * .7 + (n3 - .5) * .6;
+          r = lerp(r, .17 * mv, mh); g = lerp(g, .26 * mv, mh); b = lerp(b, .07 * mv, mh);
+        }
+        if (wet) { r *= .82; g *= .83; b *= .85; }
+        const shade = .32 + dif * 1.25;
+        d[i * 4] = clamp(r * shade) * 255; d[i * 4 + 1] = clamp(g * shade) * 255; d[i * 4 + 2] = clamp(b * shade) * 255; d[i * 4 + 3] = 255;
+        if (wet) {
+          const face = Math.pow(nz, 9);
+          const gl = clamp((stoneW * .75 + (1 - stoneW) * .9) * face * (.55 + n3 * .45) * (kind === 'cobble' ? .85 : 1));
+          gd[i * 4] = 255; gd[i * 4 + 1] = 255; gd[i * 4 + 2] = 255; gd[i * 4 + 3] = gl * 255;
+        }
+      }
+    }
+    tg.putImageData(img, 0, 0);
+    out[variant] = tex;
+    if (wet) { glossC.getContext('2d').putImageData(gimg, 0, 0); out.gloss = glossC; }
+  }
+  return out;
+}
+
+// ── Kamera über der Bodenebene ──────────────────────────────────────────────
+// cam: { u, v, hc, pitch (rad), f, roll }  u/v: Texturpunkt unter der Kamera
+const CY = H / 2;
+function rowInfo(cam, y) {
+  const a = (y - CY) / cam.f, c = Math.cos(cam.pitch), s = Math.sin(cam.pitch);
+  const den = a * c + s;
+  if (den <= .004) return null;
+  const z = cam.hc * (c - a * s) / den;
+  const d = z * c + cam.hc * s;
+  return { z, sc: d / cam.f };
+}
+function project(cam, u, hgt, v) {
+  const z = cam.v - v, c = Math.cos(cam.pitch), s = Math.sin(cam.pitch);
+  const hy = cam.hc - hgt, d = z * c + hy * s;
+  return { x: W / 2 + cam.f * (u - cam.u) / d, y: CY + cam.f * (hy * c - z * s) / d, d };
+}
+function seg(g, tex, u0, u1, v, sh, y, rh, cam, sc) {
+  let a = u0;
+  while (a < u1 - .01) {
+    const tile = Math.floor(a / TW), loc = a - tile * TW, end = Math.min(u1, (tile + 1) * TW), w = end - a;
+    g.drawImage(tex, loc, v, Math.max(w, .5), sh, W / 2 + (a - cam.u) / sc, y, w / sc + .7, rh);
+    a = end;
+  }
+}
+
+const G = mk(W, H), gctx = G.getContext('2d');      // Boden
+const GL = mk(W, H), glctx = GL.getContext('2d');   // Glanz-Maske
+const TMP = mk(W, H), tctx = TMP.getContext('2d');
+const BUF = [mk(W, H), mk(W, H)];
+const FOG = [3, 6, 12];
+
+/*  Boden rendern.
+    o: { tex, gloss, dirty, cut(v) → u (links davon sauber), fog:[start,end], hilite(g, cam) } */
+function drawGround(cam, o) {
+  const g = gctx;
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  g.fillStyle = `rgb(${FOG})`; g.fillRect(0, 0, W, H);
+  glctx.clearRect(0, 0, W, H);
+  const [f0, f1] = o.fog || [2600, 4200];
+  const RH = 2;
+  let prevZ = null;
+  for (let y = H - RH; y >= -RH; y -= RH) {
+    const ri = rowInfo(cam, y + RH / 2);
+    if (!ri) break;
+    const v = cam.v - ri.z;
+    if (v < 1) break;
+    const fog = sstep(f0, f1, ri.z);
+    if (fog > .995) break;
+    const nz = rowInfo(cam, y - RH / 2);
+    const sh = clamp(nz ? Math.abs(nz.z - ri.z) : 1, 1, 40);
+    const vv = clamp(v, 0, TH - sh - 1);
+    const half = W / 2 * ri.sc, uL = cam.u - half - 2 * ri.sc, uR = cam.u + half + 2 * ri.sc;
+    if (o.cut) {
+      const uc = o.cut(v);
+      if (uc > uL) { seg(g, o.tex, uL, Math.min(uc, uR), vv, sh, y, RH, cam, ri.sc);
+                     if (o.gloss) seg(glctx, o.gloss, uL, Math.min(uc, uR), vv, sh, y, RH, cam, ri.sc); }
+      if (uc < uR) {
+        seg(g, o.dirty, Math.max(uc, uL), uR, vv, sh, y, RH, cam, ri.sc);
+        const X = u => W / 2 + (u - cam.u) / ri.sc, x0 = X(uc), x1 = X(uc + 110);   // Schmutzwasser-Kante
+        const sg = g.createLinearGradient(x0, 0, x1, 0);
+        sg.addColorStop(0, 'rgba(12,14,8,.5)'); sg.addColorStop(1, 'rgba(12,14,8,0)');
+        g.fillStyle = sg; g.fillRect(x0, y, x1 - x0, RH);
+      }
+      if (uc > uL) {                                                                      // frisch nass
+        const X = u => W / 2 + (u - cam.u) / ri.sc, x0 = X(uc - 520), x1 = X(uc);
+        const wg = g.createLinearGradient(x0, 0, x1, 0);
+        wg.addColorStop(0, 'rgba(4,10,18,0)'); wg.addColorStop(.7, 'rgba(4,10,18,.16)'); wg.addColorStop(1, 'rgba(4,10,18,.34)');
+        g.fillStyle = wg; g.fillRect(x0, y, x1 - x0, RH);
+      }
+    } else {
+      seg(g, o.tex, uL, uR, vv, sh, y, RH, cam, ri.sc);
+      if (o.gloss) seg(glctx, o.gloss, uL, uR, vv, sh, y, RH, cam, ri.sc);
+    }
+    if (fog > .002) { g.fillStyle = `rgba(${FOG},${fog})`; g.fillRect(0, y, W, RH); }
+  }
+  // Nasse Reflexe: Glanzmaske × bewegtes Studiolicht
+  if (o.gloss && o.hilite) {
+    glctx.globalCompositeOperation = 'source-in';
+    o.hilite(glctx, cam);
+    glctx.globalCompositeOperation = 'source-over';
+    g.globalCompositeOperation = 'screen'; g.drawImage(GL, 0, 0); g.globalCompositeOperation = 'source-over';
+  }
+}
+
+// Tiefenunschärfe: oben (fern) stark, Fokusband, unten leicht
+function dof(g, cvs, focusY, top, bottom, amount = 10) {
+  tctx.clearRect(0, 0, W, H);
+  tctx.filter = `blur(${amount}px)`; tctx.drawImage(cvs, 0, 0); tctx.filter = 'none';
+  tctx.globalCompositeOperation = 'destination-in';
+  const gr = tctx.createLinearGradient(0, 0, 0, H);
+  gr.addColorStop(0, `rgba(0,0,0,${top})`);
+  gr.addColorStop(clamp((focusY - 420) / H), 'rgba(0,0,0,0)');
+  gr.addColorStop(clamp((focusY + 380) / H), 'rgba(0,0,0,0)');
+  gr.addColorStop(1, `rgba(0,0,0,${bottom})`);
+  tctx.fillStyle = gr; tctx.fillRect(0, 0, W, H);
+  tctx.globalCompositeOperation = 'source-over';
+  g.drawImage(TMP, 0, 0);
+}
+
+function grade(g, opt = {}) {
+  // kühle Schatten, Vignette, sanfte Abdunklung oben für Typografie
+  g.globalCompositeOperation = 'soft-light';
+  g.fillStyle = 'rgba(30,90,140,0.55)'; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  const v = g.createRadialGradient(W / 2, H * .52, H * .18, W / 2, H * .52, H * .78);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, `rgba(0,2,6,${opt.vig ?? .78})`);
+  g.fillStyle = v; g.fillRect(0, 0, W, H);
+  if (opt.top) {
+    const t = g.createLinearGradient(0, 0, 0, H * .55);
+    t.addColorStop(0, `rgba(1,3,8,${opt.top})`); t.addColorStop(1, 'rgba(1,3,8,0)');
+    g.fillStyle = t; g.fillRect(0, 0, W, H);
+  }
+}
+
+function blit(g, src, roll = 0, zoom = 1.04) {
+  g.save(); g.translate(W / 2, H / 2); g.rotate(roll); g.scale(zoom, zoom);
+  g.drawImage(src, -W / 2, -H / 2); g.restore();
+}
+
+// ── Sprites ─────────────────────────────────────────────────────────────────
+const SOFT = (() => { const c = mk(256, 256), g = c.getContext('2d');
+  const r = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.4, 'rgba(255,255,255,.35)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = r; g.fillRect(0, 0, 256, 256); return c; })();
+const GRAIN = [0, 1, 2].map(k => { const c = mk(512, 512), g = c.getContext('2d'), im = g.createImageData(512, 512), r = rng(500 + k);
+  for (let i = 0; i < im.data.length; i += 4) { const v = 128 + (r() + r() + r() - 1.5) * 70; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+  g.putImageData(im, 0, 0); return c; });
+function grain(g, t, a = .06) {
+  const f = Math.round(t * FPS), c = GRAIN[f % 3], r = rng(f + 3);
+  g.save(); g.globalAlpha = a; g.globalCompositeOperation = 'overlay';
+  g.fillStyle = g.createPattern(c, 'repeat'); g.translate(-r() * 512, -r() * 512);
+  g.fillRect(0, 0, W + 512, H + 512); g.restore();
+}
+
+// ── Typografie ──────────────────────────────────────────────────────────────
+function setFont(g, size, weight, track = 0) {
+  g.font = `${weight} ${size}px ${FONT}`; g.letterSpacing = `${track}px`;
+  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+}
+/* Zeile wortweise einblenden: rise + blur + Opazität, versetzt */
+function line(g, words, y, size, weight, t, tin, tout, o = {}) {
+  setFont(g, size, weight, o.track ?? -size * .025);
+  const space = g.measureText(' ').width;
+  const ws = words.map(w => g.measureText(w.text ?? w).width);
+  let total = ws.reduce((a, b) => a + b, 0) + space * (words.length - 1);
+  let x = (o.x ?? CX) - total / 2;
+  words.forEach((w0, i) => {
+    const w = typeof w0 === 'string' ? { text: w0 } : w0;
+    const k = easeOutExpo((t - tin - i * (o.stagger ?? .12)) / (o.dur ?? .9));
+    const out = tout == null ? 0 : ease((t - tout) / .45);
+    const a = k * (1 - out);
+    if (a > .002) {
+      g.save();
+      g.globalAlpha = a * (o.alpha ?? 1);
+      const blur = (1 - k) * 14 + out * 10;
+      if (blur > .3) g.filter = `blur(${blur.toFixed(1)}px)`;
+      const yy = y + (1 - k) * size * .35 - out * size * .12;
+      if (w.grad) {
+        const gr = g.createLinearGradient(x, yy - size, x + ws[i], yy);
+        gr.addColorStop(0, '#9be7ff'); gr.addColorStop(.55, '#3fb8f0'); gr.addColorStop(1, '#2b7fff');
+        g.fillStyle = gr;
+      } else g.fillStyle = w.color ?? o.color ?? '#f4f7fb';
+      g.fillText(w.text, x, yy);
+      g.restore();
+    }
+    x += ws[i] + space;
+  });
+  return total;
+}
+function fitSize(g, text, weight, size, maxW) {
+  setFont(g, size, weight, -size * .025);
+  const w = g.measureText(text).width;
+  return w > maxW ? Math.floor(size * maxW / w) : size;
+}
+
+// ── Logo ────────────────────────────────────────────────────────────────────
+let LOGO = null;
+function loadLogo() {
+  const tryLoad = src => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+  return ['assets/logo.png', 'assets/logo.svg', 'assets/logo.webp', 'assets/logo.jpg']
+    .reduce((p, src) => p.then(found => found || tryLoad(src)), Promise.resolve(null))
+    .then(im => { LOGO = im; });
+}
+// Logo in Box (Seitenverhältnis bleibt exakt erhalten) auf eigene Ebene zeichnen
+const LOGO_C = mk(W, 520), lctx = LOGO_C.getContext('2d');
+function renderLogoLayer() {
+  lctx.clearRect(0, 0, W, 520);
+  if (LOGO) {
+    const bw = 640, bh = 360, k = Math.min(bw / LOGO.naturalWidth || bw, bh / LOGO.naturalHeight || bh);
+    const w = LOGO.naturalWidth * k, h = LOGO.naturalHeight * k;
+    lctx.drawImage(LOGO, CX - w / 2, 260 - h / 2, w, h);
+    return { x0: CX - w / 2, x1: CX + w / 2 };
+  }
+  // Platzhalter-Wortmarke, bis assets/logo.png vorliegt
+  let fs = 96; setFont(lctx, fs, 700, 4);
+  const a = 'AQUAFORCE', b = 'NORD';
+  const wid = z => { setFont(lctx, z, 700, 4); const p = lctx.measureText(a).width; setFont(lctx, z, 300, 4); return p + z * .27 + lctx.measureText(b).width; };
+  fs = Math.floor(fs * Math.min(1, (TEXT_MAX - 60) / wid(fs)));
+  setFont(lctx, fs, 700, 4); const wa = lctx.measureText(a).width;
+  setFont(lctx, fs, 300, 4); const wb = lctx.measureText(b).width;
+  const sp = fs * .27, x = CX - (wa + sp + wb) / 2;
+  lctx.fillStyle = '#f4f7fb'; setFont(lctx, fs, 700, 4); lctx.fillText(a, x, 296);
+  setFont(lctx, fs, 300, 4); const gr = lctx.createLinearGradient(x + wa + sp, 220, x + wa + sp + wb, 300);
+  gr.addColorStop(0, '#9be7ff'); gr.addColorStop(1, '#2b9bff'); lctx.fillStyle = gr; lctx.fillText(b, x + wa + sp, 296);
+  setFont(lctx, 26, 500, 10); lctx.fillStyle = 'rgba(200,215,230,.6)';
+  const sub = 'HOCHDRUCKREINIGUNG', ws = lctx.measureText(sub).width; lctx.fillText(sub, CX - ws / 2, 360);
+  return { x0: x, x1: x + wa + sp + wb };
+}
+let LOGO_BOX = null;
+
+// ── Zeitlupe für Szene 3 ────────────────────────────────────────────────────
+const JET0 = 9.0, JET1 = 15.4;
+const speed = t => 1 - .74 * sstep(10.4, 10.9, t) * (1 - sstep(13.0, 13.6, t));
+const SIM = (() => { const a = [0]; let s = 0; const dt = 1 / 600;
+  for (let t = JET0; t < 16.5; t += dt) { s += speed(t) * dt; a.push(s); } return a; })();
+const sim = t => SIM[clamp(Math.round((t - JET0) * 600), 0, SIM.length - 1)];
+const SIM_END = sim(JET1);
+
+// ── Szene 1: Licht, Tropfen, Wasser ─────────────────────────────────────────
+function drop(g, x, y, r, lit, blur = 0) {
+  g.save();
+  if (blur) g.filter = `blur(${blur}px)`;
+  g.translate(x, y); g.scale(1, 1.06);
+  const body = g.createRadialGradient(-r * .2, -r * .25, r * .1, 0, 0, r);
+  body.addColorStop(0, 'rgba(10,30,48,.55)'); body.addColorStop(.75, 'rgba(4,14,26,.75)'); body.addColorStop(1, `rgba(120,210,255,${.35 + lit * .5})`);
+  g.fillStyle = body; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill();
+  const cau = g.createRadialGradient(r * .15, r * .5, 0, r * .15, r * .5, r * .55);
+  cau.addColorStop(0, `rgba(170,235,255,${.35 + lit * .55})`); cau.addColorStop(1, 'rgba(170,235,255,0)');
+  g.fillStyle = cau; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill();
+  g.fillStyle = `rgba(255,255,255,${.55 + lit * .45})`;
+  g.beginPath(); g.ellipse(-r * .38, -r * .42, r * .2, r * .12, -.6, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+const SURF = 1290;    // Wasseroberfläche Szene 1
+const IMPACT = 1.72;
+function scene1(g, t) {
+  g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+  const fadeOut = 1 - sstep(3.55, 4.0, t);
+  // Lichtstrahl
+  const bk = ease((t - .25) / 2.6), bx = lerp(-380, 1460, bk), ang = -.42;
+  const bI = env(t, .25, 3.2, .6, 1.0) * fadeOut;
+  const beamD = (x, y) => (x - bx) * Math.cos(ang) + (y - 900) * Math.sin(ang);  // ⟂-Abstand
+  if (bI > .001) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    g.translate(bx, 900); g.rotate(ang);
+    for (const [w, a] of [[520, .035], [180, .08], [46, .22], [6, .7], [1.6, 1]]) {
+      const gr = g.createLinearGradient(-w, 0, w, 0);
+      gr.addColorStop(0, 'rgba(70,170,255,0)'); gr.addColorStop(.5, `rgba(${w < 10 ? '235,250,255' : '90,190,255'},${a * bI})`); gr.addColorStop(1, 'rgba(70,170,255,0)');
+      g.fillStyle = gr; g.fillRect(-w, -2400, w * 2, 4800);
+    }
+    g.restore();
+  }
+  // Wasseroberfläche: feine Lichtlinien in Perspektive
+  const sI = sstep(.5, 1.8, t) * fadeOut;
+  if (sI > .001) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 46; i++) {
+      const k = i / 45, y = SURF + Math.pow(k, 1.8) * 640;
+      const amp = 2 + k * 18, lw = .6 + k * 2.2;
+      g.beginPath();
+      for (let x = -20; x <= W + 20; x += 12) {
+        const yy = y + Math.sin(x * (.012 - k * .007) + t * (1.1 + k) + i * 1.7) * amp
+          + Math.sin(x * .031 + t * 1.7 - i) * amp * .35 + ripple(x, y, t) * (6 + k * 20);
+        x === -20 ? g.moveTo(x, yy) : g.lineTo(x, yy);
+      }
+      const near = Math.exp(-Math.pow(beamD(540, y) / 520, 2));
+      const a = (.05 + .5 * near * bI + .25 * rippleGlow(y, t)) * sI * (1 - k * .55);
+      const gr = g.createLinearGradient(0, 0, W, 0);
+      gr.addColorStop(0, 'rgba(60,160,255,0)'); gr.addColorStop(clamp((bx - 300 + (y - 900) * .45) / W), `rgba(120,210,255,${a})`);
+      gr.addColorStop(clamp((bx + 300 + (y - 900) * .45) / W), `rgba(120,210,255,${a * .35})`); gr.addColorStop(1, `rgba(60,160,255,${a * .15})`);
+      g.strokeStyle = gr; g.lineWidth = lw; g.stroke();
+    }
+    g.restore();
+    const hz = g.createLinearGradient(0, SURF - 140, 0, SURF + 60);
+    hz.addColorStop(0, 'rgba(0,0,0,1)'); hz.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = hz; g.fillRect(0, SURF - 140, W, 200);
+  }
+  // Tropfen (Zeitlupe)
+  const fall = k => lerp(-80, SURF - 18, k * k);
+  const mk1 = clamp((t - .55) / (IMPACT - .55));
+  if (t < IMPACT) {
+    const y = fall(mk1), lit = Math.exp(-Math.pow(beamD(CX, y) / 140, 2)) * bI;
+    drop(g, CX, y, 24, lit);
+  }
+  for (const [x, t0, t1, r, b] of [[230, .2, 3.4, 15, 5], [880, .9, 4.6, 34, 14], [690, 1.6, 4.9, 9, 2]]) {
+    const k = clamp((t - t0) / (t1 - t0)); if (k <= 0 || k >= 1) continue;
+    const y = lerp(-120, SURF - 40, k), lit = Math.exp(-Math.pow(beamD(x, y) / 180, 2)) * bI;
+    g.globalAlpha = fadeOut * .8; drop(g, x, y, r, lit, b); g.globalAlpha = 1;
+  }
+  // Aufprall: Ringe + kleine Krone
+  if (t >= IMPACT) {
+    const tt = t - IMPACT;
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) {
+      const k = tt - i * .22; if (k <= 0) continue;
+      const rx = 40 + k * 300, a = Math.exp(-k * 1.3) * .55 * fadeOut;
+      g.strokeStyle = `rgba(150,220,255,${a})`; g.lineWidth = 2.2 - i * .3;
+      g.beginPath(); g.ellipse(CX, SURF + 6, rx, rx * .16, 0, 0, Math.PI * 2); g.stroke();
+    }
+    const r = rng(42);
+    for (let i = 0; i < 14; i++) {
+      const a0 = (i / 14) * Math.PI * 2 + r() * .2, sp = 120 + r() * 160, up = 260 + r() * 260;
+      const x = CX + Math.cos(a0) * sp * tt * .9, y = SURF + Math.sin(a0) * sp * tt * .15 - (up * tt - 700 * tt * tt);
+      if (y > SURF + 8) continue;
+      g.fillStyle = `rgba(200,240,255,${.8 * Math.exp(-tt * 1.5) * fadeOut})`;
+      g.beginPath(); g.arc(x, y, 2.4 + r() * 2.4, 0, Math.PI * 2); g.fill();
+    }
+    const fl = g.createRadialGradient(CX, SURF, 0, CX, SURF, 260);
+    fl.addColorStop(0, `rgba(140,215,255,${.35 * Math.exp(-tt * 2.2) * fadeOut})`); fl.addColorStop(1, 'rgba(140,215,255,0)');
+    g.fillStyle = fl; g.fillRect(CX - 300, SURF - 300, 600, 600);
+    g.restore();
+  }
+  // Text
+  headline1(g, t);
+}
+function headline1(g, t) {
+  const sz = fitSize(g, 'hinterlässt', 700, 132, TEXT_MAX), lh = sz * 1.04, y0 = 640;
+  line(g, ['Schmutz'], y0, sz, 700, t, 1.55, 3.45);
+  line(g, ['hinterlässt'], y0 + lh, sz, 700, t, 1.72, 3.5);
+  line(g, [{ text: 'Spuren.', grad: 1 }], y0 + 2 * lh, sz, 700, t, 2.05, 3.55);
+}
+function ripple(x, y, t) {
+  if (t < IMPACT) return 0;
+  const tt = t - IMPACT, dx = (x - CX) / 1, dy = (y - SURF) / .16, d = Math.hypot(dx, dy) / 6.25;
+  const front = 40 + tt * 300;
+  return Math.sin((d - front) * .06) * Math.exp(-Math.pow((d - front) / 90, 2)) * Math.exp(-tt * .8) * (d < front + 120 ? 1 : 0);
+}
+function rippleGlow(y, t) { if (t < IMPACT) return 0; return Math.exp(-(t - IMPACT) * 1.2) * Math.exp(-Math.pow((y - SURF) / 120, 2)); }
+
+// ── Kamerapfad Szene 2 + 3 (eine durchgehende Einstellung) ─────────────────
+function cam23(t) {
+  const k2 = ease((t - 4) / 5.4), k3 = ease((t - 9) / 7);
+  return {
+    u: lerp(1080, 1180, k2) + lerp(0, 160, k3),
+    v: lerp(2900, 2520, k2) - lerp(0, 230, k3),
+    hc: lerp(470, 560, k2) + lerp(0, 60, k3),
+    pitch: (lerp(57, 54, k2) + lerp(0, 2, k3)) * Math.PI / 180,
+    f: 1150,
+    roll: lerp(-.035, -.01, k2) + lerp(0, .012, k3),
+  };
+}
+let TEX = null;
+
+function lightPool(g, x, y, rx, ry, dark) {
+  // multiplizierende Lichtführung: dunkel außerhalb des Lichtkegels
+  tctx.clearRect(0, 0, W, H);
+  tctx.fillStyle = `rgb(${dark},${dark},${dark + 3})`; tctx.fillRect(0, 0, W, H);
+  tctx.save(); tctx.translate(x, y); tctx.scale(rx / 400, ry / 400);
+  const r = tctx.createRadialGradient(0, 0, 0, 0, 0, 400);
+  r.addColorStop(0, 'rgb(255,255,255)'); r.addColorStop(.55, 'rgb(170,175,185)'); r.addColorStop(1, `rgb(${dark},${dark},${dark + 3})`);
+  tctx.fillStyle = r; tctx.fillRect(-400, -400, 800, 800); tctx.restore();
+  g.globalCompositeOperation = 'multiply'; g.drawImage(TMP, 0, 0); g.globalCompositeOperation = 'source-over';
+}
+
+const cutU = (tt, v) => {
+  const p = clamp(sim(tt) / SIM_END);
+  const base = lerp(560, 2120, p < .5 ? 2 * p * p * .6 + p * .4 : p);   // sanfter Anlauf
+  return base + Math.sin(v * .011 + 1.3) * 14 + Math.sin(v * .043) * 6 + Math.sin(v * .0026) * 30;
+};
+
+function scene23(g, t) {
+  const cam = cam23(t);
+  const jet = t >= JET0 - 1e-6;
+  const hiliteJet = (gx, c) => {
+    const p = clamp(sim(t) / SIM_END);
+    const hx = W * lerp(.1, 1.1, p);
+    const r = gx.createLinearGradient(0, 0, 0, H);
+    r.addColorStop(0, 'rgba(150,205,250,.55)'); r.addColorStop(.4, 'rgba(110,170,230,.22)'); r.addColorStop(1, 'rgba(80,140,200,.08)');
+    gx.fillStyle = r; gx.fillRect(0, 0, W, H);
+    const sb = gx.createRadialGradient(hx - 260, 520, 0, hx - 260, 520, 700);
+    sb.addColorStop(0, 'rgba(235,248,255,.85)'); sb.addColorStop(1, 'rgba(235,248,255,0)');
+    gx.fillStyle = sb; gx.fillRect(0, 0, W, H);
+    // helle Wasserfilm-Kante hinter der Düse
+    gx.globalCompositeOperation = 'source-atop';
+    const pts = impactPts(c, t, 10);
+    gx.lineWidth = 170; gx.strokeStyle = 'rgba(235,250,255,.9)'; gx.lineCap = 'round'; gx.filter = 'blur(30px)';
+    gx.beginPath(); pts.forEach((q, i) => i ? gx.lineTo(q.x - 60, q.y) : gx.moveTo(q.x - 60, q.y)); gx.stroke();
+    gx.filter = 'none';
+  };
+  drawGround(cam, {
+    tex: TEX.slabs.wet, gloss: TEX.slabs.gloss, dirty: TEX.slabs.dirty,
+    cut: jet ? v => cutU(t, v) : v => -1e9, fog: [2300, 3600], hilite: hiliteJet,
+  });
+  const gx = gctx;
+  if (jet) drawJet(gx, cam, t);
+  // Lichtführung: Streiflicht wandert, Belichtung steigt aus dem Schwarz
+  const exp = sstep(4.0, 5.3, t);
+  const lx = lerp(260, 620, ease((t - 4) / 5)), ly = lerp(800, 1050, ease((t - 4) / 5));
+  const pool = 1 - sstep(8.6, 9.4, t) * .55;
+  lightPool(gx, lx, ly, 900 + 300 * pool, 1100, Math.round(lerp(4, 70, (1 - pool) + exp * .25)));
+  gx.fillStyle = `rgba(0,0,0,${1 - exp})`; gx.fillRect(0, 0, W, H);
+  // Streiflicht-Kante (Lichtkante aus Szene 1 wird zum Licht auf dem Stein)
+  if (t < 9.5) {
+    const a = env(t, 4.1, 9.5, .8, 1.2) * .22;
+    gx.save(); gx.globalCompositeOperation = 'screen'; gx.translate(lerp(-100, 1200, ease((t - 4) / 5.5)), 900); gx.rotate(-.42);
+    const gr = gx.createLinearGradient(-260, 0, 260, 0);
+    gr.addColorStop(0, 'rgba(90,180,255,0)'); gr.addColorStop(.5, `rgba(150,215,255,${a})`); gr.addColorStop(1, 'rgba(90,180,255,0)');
+    gx.fillStyle = gr; gx.fillRect(-260, -2400, 520, 4800); gx.restore();
+  }
+  dof(gx, G, 1150, .95, .45, 9);
+  if (jet) drawMist(gx, cam, t);
+  blit(g, G, cam.roll, 1.05);
+  grade(g, { vig: .82, top: .45 });
+  // Ende Szene 3: Gischt-Bloom als Übergang
+  const bloom = sstep(15.2, 16.0, t);
+  if (bloom > 0) { g.fillStyle = `rgba(200,232,250,${bloom * .55})`; g.globalCompositeOperation = 'screen'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; }
+}
+
+function impactPts(cam, t, step = 6) {
+  const pts = [];
+  for (let y = H + 40; y > -40; y -= step * 8) {
+    const ri = rowInfo(cam, y); if (!ri) break;
+    const v = cam.v - ri.z; if (v < 0) break;
+    const p = project(cam, cutU(t, v), 0, v);
+    pts.push({ x: p.x, y: p.y, v, d: p.d });
+  }
+  return pts;
+}
+
+function jetEnvelope(t) { return sstep(JET0, JET0 + .25, t) * (1 - sstep(JET1 - .3, JET1 + .2, t)); }
+
+function drawJet(g, cam, t) {
+  const e = jetEnvelope(t); if (e < .001) return;
+  const st = sim(t), spd = speed(t);
+  const pts = impactPts(cam, t, 4);
+  if (pts.length < 2) return;
+  g.save(); g.globalCompositeOperation = 'lighter';
+  // Wasserfächer: Bahn von der Düse (über/hinter der Kamera) zur Aufprall-Linie
+  const HJ = 210, BACK = -22;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    const ta = project(cam, cutU(t, a.v) + BACK, HJ, a.v + 40), tb = project(cam, cutU(t, b.v) + BACK, HJ, b.v + 40);
+    const gr = g.createLinearGradient(a.x, a.y, ta.x, ta.y);
+    gr.addColorStop(0, `rgba(220,244,255,${.55 * e})`); gr.addColorStop(.25, `rgba(170,220,255,${.2 * e})`); gr.addColorStop(.7, `rgba(150,210,255,${.05 * e})`); gr.addColorStop(1, 'rgba(150,210,255,0)');
+    g.fillStyle = gr;
+    g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(tb.x, tb.y); g.lineTo(ta.x, ta.y); g.closePath(); g.fill();
+  }
+  // Strömungsfäden im Fächer
+  const r0 = rng(7);
+  for (let i = 0; i < 70; i++) {
+    const kv = r0(), ph = r0(), ln = .12 + r0() * .2;
+    const idx = Math.floor(kv * (pts.length - 1)), a = pts[idx];
+    const top = project(cam, cutU(t, a.v) + BACK, HJ, a.v + 40);
+    const k = ((st * (2.2 + r0()) + ph) % 1);
+    const k0 = clamp(k - ln), k1 = clamp(k);
+    const x0 = lerp(top.x, a.x, k0), y0 = lerp(top.y, a.y, k0), x1 = lerp(top.x, a.x, k1), y1 = lerp(top.y, a.y, k1);
+    g.strokeStyle = `rgba(230,248,255,${(.12 + r0() * .2) * e})`; g.lineWidth = clamp(1200 / a.d, .6, 3);
+    g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+  }
+  // Aufprall-Linie: heller Glanz
+  g.filter = 'blur(6px)';
+  for (const [lw, a] of [[110, .07], [44, .14], [14, .3]]) {
+    g.strokeStyle = `rgba(200,238,255,${a * e})`; g.lineWidth = lw; g.lineJoin = 'round';
+    g.beginPath(); pts.forEach((q, i) => i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y)); g.stroke();
+  }
+  g.filter = 'none';
+  // turbulente Gischt entlang der Aufprall-Linie
+  const fr = Math.floor(st * 40);
+  for (let j = 0; j < pts.length - 1; j++) {
+    const a = pts[j], b = pts[j + 1];
+    for (let n = 0; n < 7; n++) {
+      const r = rng(j * 977 + n * 131 + fr * 7);
+      const k = r(), x = lerp(a.x, b.x, k), y = lerp(a.y, b.y, k);
+      const sc = cam.f / lerp(a.d, b.d, k);
+      const sz = (10 + r() * 46) * sc, ox = (r() - .35) * 40 * sc, oy = -r() * 50 * sc;
+      g.globalAlpha = (.12 + r() * .22) * e;
+      g.drawImage(SOFT, x + ox - sz / 2, y + oy - sz / 2, sz, sz);
+    }
+  }
+  g.globalAlpha = 1;
+  g.restore();
+  // Spritzer: ballistische Tropfen, Belichtungszeit folgt der Zeitlupe
+  const RATE = 1100, LIFE = .55, G0 = 4200, shutter = (1 / 50) * spd;
+  const i0 = Math.max(0, Math.floor((st - LIFE) * RATE)), i1 = Math.floor(st * RATE);
+  const vNear = pts[0].v, vFar = pts[pts.length - 1].v;
+  g.save(); g.lineCap = 'round';
+  for (let i = i0; i <= i1; i++) {
+    const r = rng(i * 31 + 5);
+    const s0 = i / RATE; const tau = st - s0; if (tau < 0 || tau > LIFE) continue;
+    const sT = JET0;  // Spawn-Position: Linie zum Spawnzeitpunkt
+    const v0 = lerp(vNear + 40, vFar, Math.pow(r(), 1.3));
+    const tReal = realFromSim(s0);
+    const u0 = cutU(tReal, v0);
+    const dir = r() < .82 ? 1 : -.45;
+    const vu = dir * (120 + r() * 520), vh = 160 + r() * 820, vv = (r() - .5) * 360;
+    const at = tt => ({ u: u0 + vu * tt, h: vh * tt - .5 * G0 * tt * tt, v: v0 + vv * tt });
+    const p1 = at(tau); if (p1.h < -2) continue;
+    const p0 = at(Math.max(0, tau - shutter));
+    const a = project(cam, p1.u, Math.max(0, p1.h), p1.v), b = project(cam, p0.u, Math.max(0, p0.h), p0.v);
+    const size = 2 + r() * 7;
+    const lw = clamp(size * cam.f / a.d, .7, 9);
+    const fade = (1 - tau / LIFE) * e;
+    const dirt = r() < .16;
+    g.globalCompositeOperation = dirt ? 'source-over' : 'lighter';
+    g.strokeStyle = dirt ? `rgba(58,52,36,${.55 * fade})` : `rgba(215,242,255,${.6 * fade})`;
+    g.lineWidth = lw;
+    g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(a.x + .01, a.y); g.stroke();
+  }
+  g.restore();
+}
+const realFromSim = s => { // Umkehrung von sim() (monoton)
+  let lo = 0, hi = SIM.length - 1;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (SIM[m] < s) lo = m + 1; else hi = m; }
+  return JET0 + lo / 600;
+};
+
+function drawMist(g, cam, t) {
+  const e = jetEnvelope(t) + sstep(15.0, 16, t) * 2; if (e < .001) return;
+  const st = sim(t);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const RATE = 70, LIFE = 1.6;
+  const i0 = Math.max(0, Math.floor((st - LIFE) * RATE)), i1 = Math.floor(Math.min(st, SIM_END) * RATE);
+  for (let i = i0; i <= i1; i++) {
+    const r = rng(i * 13 + 901); const s0 = i / RATE, tau = st - s0; if (tau < 0 || tau > LIFE) continue;
+    const v0 = cam.v - lerp(150, 1900, Math.pow(r(), 1.2));
+    const u0 = cutU(realFromSim(s0), v0);
+    const p = project(cam, u0 + 160 * tau + (r() - .5) * 60, 30 + 260 * tau * (.5 + r()), v0);
+    const sz = clamp((140 + 380 * tau) * cam.f / p.d, 20, 900);
+    g.globalAlpha = clamp(.09 * Math.sin(Math.PI * tau / LIFE) * Math.min(1, e));
+    g.drawImage(SOFT, p.x - sz / 2, p.y - sz / 2, sz, sz);
+  }
+  g.restore();
+}
+
+// ── Szene 4: Ergebnis ───────────────────────────────────────────────────────
+const SHOTS = [
+  { t0: 16.0, t1: 18.15, kind: 'slabs', word: 'Terrassen.',
+    cam: k => ({ u: lerp(1250, 1330, k), v: lerp(3150, 2850, k), hc: lerp(380, 340, k), pitch: lerp(44, 41, k) * Math.PI / 180, f: 1150, roll: lerp(.02, .005, k) }) },
+  { t0: 18.0, t1: 20.15, kind: 'herring', word: 'Einfahrten.',
+    cam: k => ({ u: lerp(900, 1260, k), v: lerp(3000, 2900, k), hc: lerp(420, 430, k), pitch: 43 * Math.PI / 180, f: 1150, roll: lerp(-.02, -.006, k) }) },
+  { t0: 20.0, t1: 22.4, kind: 'cobble', word: 'Pflasterflächen.',
+    cam: k => ({ u: lerp(1200, 1140, k), v: lerp(2800, 3020, k), hc: lerp(330, 470, k), pitch: lerp(41, 47, k) * Math.PI / 180, f: 1150, roll: lerp(.015, -.005, k) }) },
+];
+function shot(g, s, t) {
+  const k = ease((t - s.t0 + .2) / (s.t1 - s.t0 + .4)) * .85 + (t - s.t0) / (s.t1 - s.t0) * .15;
+  const cam = s.cam(clamp(k));
+  const T = TEX[s.kind];
+  drawGround(cam, { tex: T.wet, gloss: T.gloss, fog: [1500, 3400], hilite: (gx) => {
+    // weiche Studio-Softbox, die über die nasse Fläche wandert
+    const hx = lerp(-200, 1300, ease((t - s.t0) / (s.t1 - s.t0)));
+    const fr = gx.createLinearGradient(0, 300, 0, H);
+    fr.addColorStop(0, 'rgba(120,175,230,.6)'); fr.addColorStop(.5, 'rgba(80,130,190,.2)'); fr.addColorStop(1, 'rgba(60,110,170,.08)');
+    gx.fillStyle = fr; gx.fillRect(0, 0, W, H);
+    const r = gx.createRadialGradient(hx, 640, 0, hx, 640, 900);
+    r.addColorStop(0, 'rgba(235,248,255,1)'); r.addColorStop(.35, 'rgba(150,205,245,.55)'); r.addColorStop(1, 'rgba(90,150,210,0)');
+    gx.fillStyle = r; gx.fillRect(0, 0, W, H);
+  } });
+  dof(gctx, G, 1250, .9, .5, 8);
+  blit(g, G, cam.roll, 1.05);
+  grade(g, { vig: .8, top: .7 });
+  const sz = fitSize(g, 'Pflasterflächen.', 700, 118, TEXT_MAX);
+  line(g, [s.word], 640, sz, 700, t, s.t0 + .35, s.t1 - .55, { dur: .8 });
+}
+function scene4(g, t) {
+  // Kurze, weiche Überblendungen zwischen den drei Einstellungen
+  const active = SHOTS.filter(s => t >= s.t0 && t < s.t1);
+  if (active.length === 1) { shot(g, active[0], t); return; }
+  const [a, b] = active, k = sstep(b.t0, a.t1, t);
+  const ca = BUF[0].getContext('2d'), cb = BUF[1].getContext('2d');
+  shot(ca, a, t); shot(cb, b, t);
+  g.drawImage(BUF[0], 0, 0); g.globalAlpha = k; g.drawImage(BUF[1], 0, 0); g.globalAlpha = 1;
+}
+
+// ── Szene 5: Marke ──────────────────────────────────────────────────────────
+function scene5bg(g, t) {
+  g.fillStyle = '#010205'; g.fillRect(0, 0, W, H);
+  const p = sstep(22.0, 23.5, t);
+  const gl = g.createRadialGradient(CX, 760, 0, CX, 760, 900);
+  gl.addColorStop(0, `rgba(18,60,110,${.55 * p})`); gl.addColorStop(.5, `rgba(8,26,52,${.35 * p})`); gl.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gl; g.fillRect(0, 0, W, H);
+  // ruhige Kaustik-Lichtlinien am Boden
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 26; i++) {
+    const k = i / 25, y = 1500 + Math.pow(k, 1.7) * 420;
+    g.beginPath();
+    for (let x = -20; x <= W + 20; x += 14) {
+      const yy = y + Math.sin(x * (.01 - k * .005) + t * .7 + i * 1.3) * (3 + k * 14);
+      x === -20 ? g.moveTo(x, yy) : g.lineTo(x, yy);
+    }
+    g.strokeStyle = `rgba(80,170,240,${.07 * p * (1 - k * .5)})`; g.lineWidth = .8 + k * 1.6; g.stroke();
+  }
+  // schwebende Partikel (Bokeh)
+  const r = rng(77);
+  for (let i = 0; i < 26; i++) {
+    const x = r() * W, y0 = r() * H, sp = 8 + r() * 22, s = 4 + r() * 16;
+    const y = (y0 - (t - 22) * sp + H) % H;
+    g.globalAlpha = (.05 + r() * .12) * p; g.drawImage(SOFT, x - s, y - s, s * 2, s * 2);
+  }
+  g.restore();
+}
+function scene5fg(g, t) {
+  if (!LOGO_BOX) LOGO_BOX = renderLogoLayer();
+  const lk = easeOutExpo((t - 22.45) / 1.6);
+  if (lk > 0) {
+    g.save(); g.globalAlpha = clamp(lk * 1.05);
+    const sc = lerp(.94, 1, lk), blur = (1 - lk) * 18;
+    if (blur > .3) g.filter = `blur(${blur.toFixed(1)}px)`;
+    g.translate(CX, 640); g.scale(sc, sc); g.drawImage(LOGO_C, -CX, -260); g.restore();
+    // Lichtkante gleitet einmal über das Logo (nur Licht, Logo bleibt unverändert)
+    const sk = (t - 23.1) / 1.1;
+    if (sk > 0 && sk < 1) {
+      tctx.clearRect(0, 0, W, H); tctx.drawImage(LOGO_C, 0, 380);
+      tctx.globalCompositeOperation = 'source-in';
+      const sx = lerp(LOGO_BOX.x0 - 200, LOGO_BOX.x1 + 200, ease(sk));
+      const gr = tctx.createLinearGradient(sx - 120, 380, sx + 120, 900);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, `rgba(255,255,255,${.85 * Math.sin(Math.PI * sk)})`); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      tctx.fillStyle = gr; tctx.fillRect(0, 0, W, H); tctx.globalCompositeOperation = 'source-over';
+      g.save(); g.globalCompositeOperation = 'lighter'; g.drawImage(TMP, 0, 0); g.restore();
+      // anamorphe Lichtkante
+      g.save(); g.globalCompositeOperation = 'lighter';
+      const fx = sx, fa = .5 * Math.sin(Math.PI * sk);
+      const fl = g.createLinearGradient(fx - 520, 0, fx + 520, 0);
+      fl.addColorStop(0, 'rgba(80,180,255,0)'); fl.addColorStop(.5, `rgba(170,225,255,${fa})`); fl.addColorStop(1, 'rgba(80,180,255,0)');
+      g.fillStyle = fl; g.fillRect(fx - 520, 638, 1040, 3);
+      g.globalAlpha = fa * .5; g.drawImage(SOFT, fx - 70, 570, 140, 140);
+      g.restore();
+    }
+  }
+  // Botschaft
+  const sz = fitSize(g, 'Deine Fläche. Wie neu.', 700, 92, TEXT_MAX - 60);
+  line(g, ['Deine', 'Fläche.', { text: 'Wie', grad: 1 }, { text: 'neu.', grad: 1 }], 1015, sz, 700, t, 24.15, null, { stagger: .11 });
+  // Call-to-Action als Pill
+  const ck = easeOutExpo((t - 25.55) / 1.0);
+  if (ck > 0) {
+    const txt = 'Jetzt Hochdruckreinigung anfragen.';
+    const fs = fitSize(g, txt, 600, 38, TEXT_MAX - 130);
+    setFont(g, fs, 600, -fs * .01); const tw = g.measureText(txt).width;
+    const pw = tw + 84, ph = fs + 46, py = 1150 + (1 - ck) * 24;
+    g.save(); g.globalAlpha = ck;
+    const pg = g.createLinearGradient(CX - pw / 2, 0, CX + pw / 2, 0);
+    pg.addColorStop(0, '#1aa6e6'); pg.addColorStop(1, '#2b6fff');
+    g.shadowColor = 'rgba(40,150,255,.45)'; g.shadowBlur = 50 * ck;
+    g.fillStyle = pg; g.beginPath(); g.roundRect(CX - pw / 2, py - ph / 2, pw, ph, ph / 2); g.fill();
+    g.shadowBlur = 0;
+    // Glanz wandert einmal über den Button
+    const gk = (t - 26.1) / .9;
+    if (gk > 0 && gk < 1) {
+      g.save(); g.clip();
+      const gx = lerp(CX - pw / 2 - 100, CX + pw / 2 + 100, ease(gk));
+      const sh = g.createLinearGradient(gx - 80, 0, gx + 80, 0);
+      sh.addColorStop(0, 'rgba(255,255,255,0)'); sh.addColorStop(.5, 'rgba(255,255,255,.35)'); sh.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = sh; g.fillRect(CX - pw / 2, py - ph / 2, pw, ph); g.restore();
+    }
+    g.fillStyle = '#fff'; setFont(g, fs, 600, -fs * .01); g.fillText(txt, CX - tw / 2, py + fs * .36);
+    g.restore();
+  }
+  line(g, ['Unverbindlich', '&', 'fair.'], 1290, 34, 500, t, 26.55, null, { color: 'rgba(205,218,232,.82)', stagger: .07, track: .5 });
+  line(g, ['Bordesholm', '·', 'Schleswig-Holstein'], 1350, 25, 500, t, 27.15, null, { color: 'rgba(140,156,175,.75)', stagger: .05, track: 2 });
+}
+
+// ── Komposition ─────────────────────────────────────────────────────────────
+function render(t) {
+  t = clamp(t, 0, DUR - 1e-4);
+  const g = ctx;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.filter = 'none';
+  if (OVERLAY) { renderOverlay(g, t); g.restore(); return; }
+  if (t < 4.0) scene1(g, t);
+  else if (t < 16.0) scene23(g, t);
+  else if (t < 22.0) scene4(g, t);
+  else {
+    scene5bg(g, t);
+    if (t < 22.6) {                       // Ausblende der letzten Einstellung
+      const k = sstep(22.0, 22.6, t);
+      const c = BUF[0].getContext('2d'); shot(c, SHOTS[2], t);
+      g.globalAlpha = 1 - k; g.drawImage(BUF[0], 0, 0); g.globalAlpha = 1;
+    }
+    scene5fg(g, t);
+  }
+  // Blende Szene 3 → 4
+  if (t >= 16.0 && t < 16.6) { g.fillStyle = `rgba(200,232,250,${.55 * (1 - sstep(16.0, 16.6, t))})`; g.globalCompositeOperation = 'screen'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; }
+  grain(g, t, t < 4 || t > 22 ? .035 : .06);
+  if (showSafe) drawSafe(g);
+  g.restore();
+}
+// Nur Typografie + Logo (Alpha), für eigenes Footage aus Higgsfield
+function renderOverlay(g, t) {
+  g.clearRect(0, 0, W, H);
+  if (t < 4) {
+    headline1(g, t);
+  } else if (t >= 16 && t < 22.4) {
+    const sz = fitSize(g, 'Pflasterflächen.', 700, 118, TEXT_MAX);
+    for (const s of SHOTS) if (t >= s.t0 && t < s.t1) line(g, [s.word], 640, sz, 700, t, s.t0 + .35, s.t1 - .55, { dur: .8 });
+  }
+  if (t >= 22) scene5fg(g, t);
+  if (showSafe) drawSafe(g);
+}
+
+// Safe Zones: TikTok + Instagram Reels (Vereinigung der UI-Flächen)
+let showSafe = params.has('safe');
+function drawSafe(g) {
+  g.save();
+  g.fillStyle = 'rgba(255,40,80,.22)';
+  g.fillRect(0, 0, W, 220);              // Statusleiste, Tabs, „Folge ich / Für dich"
+  g.fillRect(0, H - 480, W, 480);        // Profil, Caption, Musik, Kommentarfeld
+  g.fillRect(W - 160, 700, 160, H - 1180); // Like / Kommentar / Teilen / Profil
+  g.strokeStyle = 'rgba(80,255,160,.9)'; g.lineWidth = 3; g.setLineDash([14, 10]);
+  g.strokeRect(CX - TEXT_MAX / 2, 220, TEXT_MAX, H - 700);
+  g.restore();
+}
+
+// ── Start ───────────────────────────────────────────────────────────────────
+const status = document.getElementById('status');
+async function init() {
+  await document.fonts.ready;
+  await Promise.all(['300', '500', '600', '700'].map(w => document.fonts.load(`${w} 40px Inter`))).catch(() => {});
+  await loadLogo();
+  if (!OVERLAY) {
+    await new Promise(r => setTimeout(r, 30));
+    const A = noiseField(11, 5, 5, .55), B = noiseField(13, 7, 5, .55);
+    for (let i = 0; i < NPX; i++) A[i] = (A[i] + B[i]) * .5 + (A[i] - .5) * .25;   // zwei Gitter → keine Rastermuster
+    NF = [A, noiseField(23, 24, 4, .5), noiseField(37, 160, 3, .5)];
+    TEX = {
+      slabs: bakeTextures('slabs', ['dirty', 'wet']),
+      herring: bakeTextures('herring', ['wet']),
+      cobble: bakeTextures('cobble', ['wet']),
+    };
+    NF = null;
+  }
+  status.remove();
+}
+window.render = render;
+window.DUR = DUR; window.FPS = FPS;
+window.ready = init();
+
+if (!EXPORT) {
+  const play = document.getElementById('play'), seek = document.getElementById('seek'), time = document.getElementById('time');
+  const music = document.getElementById('music');
+  let playing = true, t0 = performance.now(), off = 0;
+  const now = () => playing ? (off + (performance.now() - t0) / 1000) % DUR : off;
+  const toggle = () => { off = now(); playing = !playing; t0 = performance.now(); play.textContent = playing ? 'Pause' : 'Play';
+    if (playing) { music.currentTime = off; music.play().catch(() => {}); } else music.pause(); };
+  play.onclick = toggle; canvas.onclick = toggle;
+  document.getElementById('safe').onclick = () => { showSafe = !showSafe; };
+  addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); toggle(); } if (e.key === 's') showSafe = !showSafe; });
+  seek.oninput = () => { off = +seek.value; t0 = performance.now(); music.currentTime = off; };
+  window.ready.then(() => {
+    t0 = performance.now(); music.play().catch(() => { playing = false; play.textContent = 'Play'; });
+    let last = -1;
+    const loop = () => {
+      const t = now();
+      if (playing && t < last) { music.currentTime = 0; music.play().catch(() => {}); }
+      last = t; render(t); seek.value = t; time.textContent = t.toFixed(2);
+      requestAnimationFrame(loop);
+    };
+    loop();
+  });
+}
+</script>
+</body>
+</html>
