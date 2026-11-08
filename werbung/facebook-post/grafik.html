@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Vorher Nachher Post</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=block" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1080px; height: 1350px; background: #050a14; font-family: Inter, sans-serif; color: #f4f7fb; overflow: hidden; }
+  .photos { position: absolute; inset: 0 0 330px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .ph { position: relative; overflow: hidden; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 75%, rgba(5,10,20,.85) 100%); }
+  .tag { position: absolute; top: 36px; left: 36px; z-index: 2; padding: 12px 24px; border-radius: 999px;
+         font-size: 30px; font-weight: 700; letter-spacing: .14em; }
+  .vor .tag { background: rgba(10,14,22,.72); color: #e6ebf2; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.18); }
+  .nach .tag { background: linear-gradient(90deg, #1aa6e6, #2b6fff); color: #fff; box-shadow: 0 6px 30px rgba(40,150,255,.5); }
+  .divider { position: absolute; top: 0; bottom: 330px; left: 537px; width: 6px; background: linear-gradient(180deg, #8fe0ff, #2b8fff); box-shadow: 0 0 24px rgba(80,180,255,.8); z-index: 3; }
+  .arrow { position: absolute; left: 540px; top: 510px; transform: translate(-50%, -50%); width: 84px; height: 84px; border-radius: 50%;
+           background: #fff; z-index: 4; display: grid; place-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.45); }
+  .arrow svg { width: 40px; height: 40px; }
+  .panel { position: absolute; left: 0; right: 0; bottom: 0; height: 330px; display: flex; align-items: center; gap: 44px; padding: 0 64px;
+           background: radial-gradient(ellipse 60% 90% at 22% 50%, rgba(30,100,180,.45), rgba(5,10,20,0) 70%), #050a14; }
+  .panel img { width: 330px; flex: none; }
+  .txt h1 { font-size: 54px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; }
+  .txt h1 span { background: linear-gradient(90deg, #9be7ff, #3fb8f0 55%, #2b7fff); -webkit-background-clip: text; color: transparent; }
+  .txt p { margin-top: 16px; font-size: 27px; font-weight: 500; color: #b9c6d6; line-height: 1.4; }
+  .txt .loc { margin-top: 10px; font-size: 22px; letter-spacing: .08em; color: #7d8ca0; font-weight: 600; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <div class="photos">
+    <div class="ph vor"><span class="tag">VORHER</span><img src="vorher.jpg" alt=""></div>
+    <div class="ph nach"><span class="tag">NACHHER</span><img src="nachher.jpg" alt=""></div>
+  </div>
+  <div class="divider"></div>
+  <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#1a7fe6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+  <div class="panel">
+    <img src="logo.png" alt="AquaForce-Nord">
+    <div class="txt">
+      <h1>Deine Fläche.<br><span>Wie neu.</span></h1>
+      <p>Terrassen · Einfahrten · Pflaster</p>
+      <div class="loc">Bordesholm &amp; Umgebung</div>
+    </div>
+  </div>
+</body>
+</html>
