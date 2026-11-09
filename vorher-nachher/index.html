@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="de" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Anton";
+        src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");
+        font-weight: 500;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+      }
+      :root {
+        --ground: #05121c;
+        --ink: #ffffff;
+        --aqua: #2fd6ff;
+        --aqua-deep: #0a8fd1;
+        --dirt: #ff6b4a;
+        --font-display: "Anton", sans-serif;
+        --font-text: "Inter", "Helvetica Neue", Arial, sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        font-family: var(--font-text);
+        color: var(--ink);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      video.clip,
+      .still {
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+
+      /* ---------- Footage ---------- */
+      #v1 { z-index: 1; }
+      #v2 { z-index: 2; clip-path: polygon(0px 2360px, 1080px 2040px, 1080px 2400px, 0px 2400px); }
+      #v3 { z-index: 4; }
+      #v4 { z-index: 5; }
+
+      /* ---------- Wasserstrahl-Wipe ---------- */
+      #wash { z-index: 3; pointer-events: none; }
+      #wash-bar {
+        position: absolute;
+        left: -160px;
+        top: 0;
+        width: 1400px;
+        height: 0;
+        transform-origin: 50% 50%;
+        transform: translateY(2200px) rotate(-16.5deg);
+      }
+      #wash-core {
+        position: absolute;
+        left: 0;
+        top: -9px;
+        width: 100%;
+        height: 18px;
+        border-radius: 9px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.2), #fff 20%, #e9fbff 50%, #fff 80%, rgba(255,255,255,0.2));
+        box-shadow: 0 0 18px 6px rgba(255,255,255,0.95), 0 0 60px 22px rgba(47,214,255,0.85), 0 0 140px 40px rgba(10,143,209,0.55);
+      }
+      #wash-mist {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(180deg, rgba(220,248,255,0.75), rgba(160,230,255,0.25) 35%, rgba(160,230,255,0) 100%);
+        filter: blur(14px);
+      }
+      #wash-spray {
+        position: absolute;
+        left: 0;
+        top: -200px;
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(0deg, rgba(235,252,255,0.55), rgba(235,252,255,0) 100%);
+        filter: blur(18px);
+      }
+      .drop {
+        position: absolute;
+        top: -8px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #fff, rgba(200,245,255,0.9) 45%, rgba(47,214,255,0) 72%);
+      }
+
+      /* ---------- Blitz + Glanz ---------- */
+      #flash {
+        z-index: 6;
+        background: radial-gradient(circle at 50% 55%, #ffffff 0%, #e6fbff 45%, #bff1ff 100%);
+        opacity: 0;
+      }
+      #shine {
+        z-index: 7;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      #shine-band {
+        position: absolute;
+        top: -400px;
+        left: -900px;
+        width: 520px;
+        height: 2800px;
+        transform: rotate(18deg);
+        background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.28) 45%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.28) 55%, rgba(255,255,255,0));
+        mix-blend-mode: screen;
+      }
+      .sparkle {
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        opacity: 0;
+        background:
+          linear-gradient(90deg, rgba(255,255,255,0), #fff 50%, rgba(255,255,255,0)) center / 100% 6px no-repeat,
+          linear-gradient(0deg, rgba(255,255,255,0), #fff 50%, rgba(255,255,255,0)) center / 6px 100% no-repeat;
+        filter: drop-shadow(0 0 10px rgba(47,214,255,0.95));
+      }
+
+      /* ---------- Vergleich am Ende ---------- */
+      #compare { z-index: 8; opacity: 0; }
+      #cmp-before { clip-path: inset(0px 1080px 0px 0px); }
+      #cmp-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 8px;
+        height: 1920px;
+        margin-left: -4px;
+        background: #fff;
+        box-shadow: 0 0 24px rgba(47,214,255,0.9);
+      }
+      #cmp-knob {
+        position: absolute;
+        top: 900px;
+        left: -46px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 0 6px rgba(47,214,255,0.6), 0 10px 30px rgba(0,0,0,0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .tri {
+        width: 0;
+        height: 0;
+        border-top: 16px solid transparent;
+        border-bottom: 16px solid transparent;
+      }
+      .tri.l { border-right: 20px solid var(--aqua-deep); }
+      .tri.r { border-left: 20px solid var(--aqua-deep); }
+      .cmp-tag {
+        position: absolute;
+        top: 300px;
+        padding: 14px 26px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 38px;
+        letter-spacing: 0.14em;
+        background: rgba(5,18,28,0.72);
+      }
+      #cmp-tag-b { left: 70px; color: #fff; }
+      #cmp-tag-a { right: 70px; color: var(--aqua); }
+      #brand {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1090px;
+        height: 520px;
+        padding-top: 130px;
+        text-align: center;
+        background: linear-gradient(180deg, rgba(5,18,28,0) 0%, rgba(5,18,28,0.82) 30%, rgba(5,18,28,0.82) 75%, rgba(5,18,28,0) 100%);
+      }
+      #brand-name {
+        font-family: var(--font-display);
+        font-size: 140px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      #brand-name span { color: var(--aqua); }
+      #brand-sub {
+        margin-top: 22px;
+        font-size: 42px;
+        font-weight: 500;
+        color: #d8f4ff;
+      }
+
+      /* ---------- Titel ---------- */
+      .title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 210px;
+        z-index: 20;
+        text-align: center;
+        pointer-events: none;
+      }
+      .title .word {
+        font-family: var(--font-display);
+        font-size: 200px;
+        line-height: 1;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        text-shadow: 0 6px 0 rgba(0,0,0,0.25), 0 12px 50px rgba(0,0,0,0.55);
+      }
+      .title .sub {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 12px 28px;
+        border-radius: 999px;
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        background: rgba(5,18,28,0.6);
+      }
+      .title.before .word { color: #fff; }
+      .title.before .sub::before {
+        content: "";
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-right: 16px;
+        border-radius: 50%;
+        background: var(--dirt);
+        vertical-align: 2px;
+      }
+      .title.after .word {
+        color: var(--aqua);
+        text-shadow: 0 0 40px rgba(47,214,255,0.55), 0 12px 50px rgba(0,0,0,0.55);
+      }
+      .title.after .sub::before {
+        content: "";
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-right: 16px;
+        border-radius: 50%;
+        background: var(--aqua);
+        vertical-align: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="14" data-width="1080" data-height="1920">
+      <!-- Szene 1: Terrasse -->
+      <video id="v1" class="clip" src="assets/clips/vorher-terrasse.mp4" muted playsinline data-start="0" data-duration="3.03" data-track-index="0"></video>
+      <video id="v2" class="clip" src="assets/clips/nachher-terrasse.mp4" muted playsinline data-start="2.15" data-duration="3.3" data-track-index="1"></video>
+
+      <div id="wash" class="clip" data-start="2.1" data-duration="1.05" data-track-index="2">
+        <div id="wash-bar">
+          <div id="wash-spray"></div>
+          <div id="wash-mist"></div>
+          <div id="wash-core"></div>
+        </div>
+      </div>
+
+      <!-- Szene 2: Gartenweg -->
+      <video id="v3" class="clip" src="assets/clips/vorher-weg.mp4" muted playsinline data-start="5.25" data-duration="2.4" data-track-index="3"></video>
+      <video id="v4" class="clip" src="assets/clips/nachher-weg.mp4" muted playsinline data-start="7.4" data-duration="3.6" data-track-index="4"></video>
+      <div id="flash" class="clip" data-start="7.15" data-duration="0.6" data-track-index="5"></div>
+      <div id="shine" class="clip" data-start="7.6" data-duration="1.4" data-track-index="6">
+        <div id="shine-band" data-layout-allow-overflow></div>
+        <div class="sparkle" id="sp1" style="left: 300px; top: 1250px"></div>
+        <div class="sparkle" id="sp2" style="left: 640px; top: 1480px"></div>
+        <div class="sparkle" id="sp3" style="left: 470px; top: 1030px"></div>
+      </div>
+
+      <!-- Ende: Vergleich + Marke -->
+      <div id="compare" class="clip" data-start="10.5" data-duration="3.5" data-track-index="7">
+        <img id="cmp-after" class="still clip" src="assets/clips/nachher-weg-still.jpg" alt="" />
+        <img id="cmp-before" class="still clip" src="assets/clips/vorher-weg-still.jpg" alt="" />
+        <div id="cmp-line"><div id="cmp-knob" data-layout-allow-overflow><div class="tri l"></div><div class="tri r"></div></div></div>
+        <div class="cmp-tag" id="cmp-tag-b">VORHER</div>
+        <div class="cmp-tag" id="cmp-tag-a">NACHHER</div>
+        <div id="brand">
+          <div id="brand-name">Aquaforce <span>Nord</span></div>
+          <div id="brand-sub">Pflaster wieder wie neu &middot; Link in Bio</div>
+        </div>
+      </div>
+
+      <!-- Titel -->
+      <div id="t1b" class="title before clip" data-start="0" data-duration="2.45" data-track-index="8">
+        <div class="word">Vorher</div>
+        <div class="sub">Terrasse</div>
+      </div>
+      <div id="t1a" class="title after clip" data-start="2.55" data-duration="2.75" data-track-index="9">
+        <div class="word">Nachher</div>
+        <div class="sub">Terrasse</div>
+      </div>
+      <div id="t2b" class="title before clip" data-start="5.35" data-duration="1.85" data-track-index="10">
+        <div class="word">Vorher</div>
+        <div class="sub">Gartenweg</div>
+      </div>
+      <div id="t2a" class="title after clip" data-start="7.45" data-duration="3.15" data-track-index="11">
+        <div class="word">Nachher</div>
+        <div class="sub">Gartenweg</div>
+      </div>
+
+      <!-- Sound-Effekte -->
+      <audio id="sfx-spray" src="assets/sfx/spray.wav" data-start="2.05" data-duration="1.0" data-volume="0.55" data-track-index="12"></audio>
+      <audio id="sfx-whoosh1" src="assets/sfx/whoosh.wav" data-start="5.12" data-duration="0.45" data-volume="0.8" data-track-index="13"></audio>
+      <audio id="sfx-whoosh2" src="assets/sfx/whoosh.wav" data-start="7.0" data-duration="0.45" data-volume="0.8" data-track-index="14"></audio>
+      <audio id="sfx-impact" src="assets/sfx/impact.wav" data-start="7.38" data-duration="0.8" data-volume="0.9" data-track-index="15"></audio>
+      <audio id="sfx-shine" src="assets/sfx/shimmer.wav" data-start="7.75" data-duration="1.3" data-volume="0.5" data-track-index="16"></audio>
+      <audio id="sfx-whoosh3" src="assets/sfx/whoosh.wav" data-start="10.45" data-duration="0.45" data-volume="0.6" data-track-index="17"></audio>
+      <audio id="sfx-shine2" src="assets/sfx/shimmer.wav" data-start="11.55" data-duration="1.3" data-volume="0.4" data-track-index="18"></audio>
+    </div>
+
+    <script>
+      // Deterministischer Zufall (kein Math.random im Render).
+      let seed = 7;
+      const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+      // Wassertropfen entlang des Strahls anlegen.
+      const bar = document.getElementById("wash-bar");
+      const drops = [];
+      for (let i = 0; i < 46; i++) {
+        const d = document.createElement("div");
+        d.className = "drop";
+        const s = 6 + rnd() * 16;
+        d.style.width = d.style.height = s + "px";
+        d.style.left = 60 + rnd() * 1280 + "px";
+        bar.appendChild(d);
+        drops.push({ el: d, delay: rnd() * 0.25, rise: 50 + rnd() * 190, drift: (rnd() - 0.5) * 90 });
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      // ---------- Szene 1: Vorher Terrasse ----------
+      tl.fromTo("#v1", { scale: 1.08 }, { scale: 1.0, duration: 3.03, ease: "none" }, 0);
+      tl.fromTo("#t1b .word", { scale: 1.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, 0.08);
+      tl.fromTo("#t1b .sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 0.3);
+      tl.to("#t1b", { y: -60, opacity: 0, duration: 0.25, ease: "power2.in" }, 2.2);
+
+      // ---------- Übergang 1: Hochdruck-Wipe von unten nach oben ----------
+      const WIPE_START = 2.15;
+      const WIPE_DUR = 0.9;
+      tl.to("#v2", {
+        clipPath: "polygon(0px -90px, 1080px -410px, 1080px 2400px, 0px 2400px)",
+        duration: WIPE_DUR,
+        ease: "power2.inOut",
+      }, WIPE_START);
+      tl.fromTo("#wash-bar",
+        { y: 2200, rotation: -16.5 },
+        { y: -250, rotation: -16.5, duration: WIPE_DUR, ease: "power2.inOut" }, WIPE_START);
+      tl.fromTo("#wash", { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "none" }, 2.1);
+      tl.to("#wash", { opacity: 0, duration: 0.1, ease: "none" }, 3.05);
+      drops.forEach((p) => {
+        tl.fromTo(p.el,
+          { y: 0, x: 0, opacity: 0.95, scale: 1 },
+          { y: -p.rise, x: p.drift, opacity: 0, scale: 0.4, duration: 0.3, ease: "power2.out", repeat: 2 },
+          WIPE_START + p.delay);
+      });
+      tl.fromTo("#v2", { scale: 1.06 }, { scale: 1.0, duration: 1.4, ease: "power2.out" }, WIPE_START);
+
+      tl.fromTo("#t1a .word", { y: 120, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 2.6);
+      tl.fromTo("#t1a .sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 2.8);
+
+      // ---------- Szenenwechsel: Whip-Pan ----------
+      tl.to("#v2", { x: -760, filter: "blur(26px)", duration: 0.22, ease: "power3.in" }, 5.23);
+      tl.to("#t1a", { x: -760, opacity: 0, duration: 0.2, ease: "power3.in" }, 5.23);
+      tl.fromTo("#v3", { x: 760, filter: "blur(26px) brightness(1)" }, { x: 0, filter: "blur(0px) brightness(1)", duration: 0.28, ease: "power3.out" }, 5.25);
+      tl.fromTo("#t2b .word", { scale: 1.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, 5.4);
+      tl.fromTo("#t2b .sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 5.6);
+      tl.to("#t2b", { scale: 1.4, opacity: 0, duration: 0.2, ease: "power2.in" }, 7.0);
+
+      // ---------- Übergang 2: Zoom-Punch + Blitz ----------
+      tl.to("#v3", { scale: 1.55, filter: "blur(18px) brightness(1.6)", duration: 0.25, ease: "power3.in" }, 7.15);
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.in" }, 7.15);
+      tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, 7.4);
+      tl.fromTo("#v4", { scale: 1.35, filter: "blur(14px)" }, { scale: 1.0, filter: "blur(0px)", duration: 0.65, ease: "expo.out" }, 7.4);
+      tl.fromTo("#t2a .word", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2.4)" }, 7.5);
+      tl.fromTo("#t2a .sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 7.7);
+
+      // Glanz-Streifen + Funkeln über dem sauberen Pflaster
+      tl.fromTo("#shine-band", { x: 0 }, { x: 2300, duration: 0.9, ease: "power2.inOut" }, 7.65);
+      [["#sp1", 7.95], ["#sp2", 8.15], ["#sp3", 8.3]].forEach(([id, t]) => {
+        tl.fromTo(id, { scale: 0, rotation: 0, opacity: 0 }, { scale: 1, rotation: 90, opacity: 1, duration: 0.25, ease: "power2.out" }, t);
+        tl.to(id, { scale: 0, rotation: 180, opacity: 0, duration: 0.3, ease: "power2.in" }, t + 0.25);
+      });
+      tl.to("#t2a", { y: -60, opacity: 0, duration: 0.25, ease: "power2.in" }, 10.35);
+
+      // ---------- Ende: Vorher/Nachher-Slider ----------
+      const line = document.getElementById("cmp-line");
+      const cmp = { x: 0 };
+      const applyCmp = () => {
+        document.getElementById("cmp-before").style.clipPath = `inset(0px ${1080 - cmp.x}px 0px 0px)`;
+        line.style.transform = `translateX(${cmp.x}px)`;
+      };
+      applyCmp();
+      tl.fromTo("#compare", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 10.5);
+      tl.fromTo(cmp, { x: 0 }, { x: 860, duration: 0.8, ease: "power2.inOut", onUpdate: applyCmp }, 10.6);
+      tl.to(cmp, { x: 230, duration: 0.8, ease: "power2.inOut", onUpdate: applyCmp }, 11.45);
+      tl.to(cmp, { x: 540, duration: 0.6, ease: "power2.out", onUpdate: applyCmp }, 12.3);
+      tl.fromTo(".cmp-tag", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.08, ease: "power3.out" }, 10.75);
+      tl.fromTo("#brand", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 11.4);
+      tl.fromTo("#brand-name", { y: 60, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 11.4);
+      tl.fromTo("#brand-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 11.65);
+
+      tl.set({}, {}, 14);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
