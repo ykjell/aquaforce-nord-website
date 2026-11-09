@@ -1,20 +1,22 @@
 # Vorher / Nachher – Pflasterreinigung (Social-Media-Clip)
 
-HyperFrames-Komposition (`index.html`, 1080×1920, 30 fps, 14 s) aus zwei Handy-Videos
+HyperFrames-Komposition (`index.html`, 1080×1920, 30 fps, 16,8 s) aus zwei Handy-Videos
 (IMG_6536 = vorher, IMG_6539 = nachher). Fertiges Video: `vorher-nachher.mp4`.
 
 ## Ablauf
 
 | Zeit | Szene |
 |---|---|
-| 0.0 – 2.2 | **VORHER · Terrasse**, ruhige Zeitlupe (Quelle 0–1,55 s, Bewegung interpoliert) |
-| 2.15 – 3.05 | **Hochdruck-Wipe**: leuchtender Wasserstrahl mit Sprühnebel fährt von unten nach oben und legt das saubere Pflaster frei |
-| 3.0 – 5.2 | **NACHHER · Terrasse** (Quelle 5,0 s ff., gleicher Blickwinkel) |
-| 5.25 | Whip-Pan mit Bewegungsunschärfe zum Gartenweg |
-| 5.3 – 7.1 | **VORHER · Gartenweg** |
-| 7.15 – 7.6 | **Zoom-Punch + Weißblitz** |
-| 7.4 – 10.4 | **NACHHER · Gartenweg** mit Glanzstreifen und Funkeln |
-| 10.5 – 14.0 | Vorher/Nachher-Slider (ausgerichtete Standbilder) + „AQUAFORCE NORD · Link in Bio" |
+| 0.0 – 3.0 | **Einstieg:** Vorher/Nachher-Slider über den Gartenweg (ausgerichtete Standbilder) |
+| 3.0 | Whip-Pan in die erste Szene |
+| 3.0 – 5.2 | **VORHER · Terrasse**, ruhige Zeitlupe (Quelle 0–1,55 s, Bewegung interpoliert) |
+| 5.15 – 6.05 | **Hochdruck-Wipe**: leuchtender Wasserstrahl mit Sprühnebel fährt von unten nach oben und legt das saubere Pflaster frei |
+| 6.0 – 8.2 | **NACHHER · Terrasse** |
+| 8.25 | Whip-Pan zum Gartenweg |
+| 8.3 – 10.1 | **VORHER · Gartenweg** |
+| 10.15 – 10.6 | **Zoom-Punch + Weißblitz** |
+| 10.4 – 13.3 | **NACHHER · Gartenweg** mit Glanzstreifen und Funkeln |
+| 13.3 – 16.8 | Fertiges Bild zoomt raus, wird unscharf → „AQUAFORCE NORD · Pflaster wieder wie neu · Link in Bio" |
 
 Sound: nur selbst erzeugte Effekte (Wasserzischen, Whooshes, Impact, Glitzern) – Musik
 am besten direkt in TikTok/Instagram drüberlegen.
