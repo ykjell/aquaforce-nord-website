@@ -30,24 +30,21 @@ Steine in Zeitlupe. So wirkt es nach Detailarbeit und nicht nach „geht nicht w
 Das Nachher-Foto ist per Bildabgleich (Homographie) so verzerrt, dass das Pflasterraster
 genau auf dem Vorher-Foto liegt. Nur so wirkt der Slider sauber (`tools/align-photos.py`).
 
-## Sprechertext
+## Sprechertext (durchgehend)
 
-Du sprichst etwa 2,5 Wörter pro Sekunde. Die Längen passen zu den Szenen.
+Etwa 70 Wörter auf 32,7 s, also ruhiges Sprechtempo mit Luft zum Atmen.
 
-| Zeit | Szene | Text |
+| Zeit | Bild | Text |
 |---|---|---|
-| 0 – 1,8 s | Selfie | „Diese Terrasse war echt fällig.“ |
-| 1,8 – 3,4 s | Flecken | „Schau dir mal diese Flecken an.“ |
-| 3,4 – 5,0 s | Werkzeug | „Mein Werkzeug für heute.“ |
-| 5,0 – 8,0 s | Abfegen | „Schritt eins: Erstmal alles grob abfegen.“ |
-| 8,0 – 14,6 s | Flächenreiniger | „Dann geht's mit dem Flächenreiniger drüber. Der löst den Dreck gleichmäßig und spritzt nicht rum – Bahn für Bahn über die ganze Fläche.“ |
-| 14,6 – 19,0 s | Hochdruck | „Hartnäckige Stellen nehm ich mir danach mit dem Strahl einzeln vor.“ |
-| 19,0 – 24,5 s | Abspülen | „Zum Schluss alles gründlich abspülen, damit der ganze gelöste Dreck runter ist.“ |
-| 24,5 – 30,2 s | Vorher/Nachher | „Und jetzt der Vergleich … vorher … *(kurze Pause)* … und nachher.“ |
-| 30,2 – 32,7 s | Endkarte | „Wie neu! Ist deine Terrasse auch fällig? Schreib uns.“ |
-
-Tipp: Sprich das „vorher“ genau dann, wenn links das Label VORHER steht (ab ca. 27,4 s), und
-„nachher“, wenn rechts NACHHER erscheint.
+| 0 – 1,8 s | Selfie | „Leute, diese Terrasse war echt fällig.“ |
+| 1,8 – 3,4 s | Flecken | „Guckt euch mal diese Flecken an.“ |
+| 3,4 – 5,0 s | Werkzeug | „Das ist heute mein Werkzeug.“ |
+| 5,0 – 8,0 s | Abfegen | „Erster Schritt: alles einmal grob abfegen.“ |
+| 8,0 – 14,6 s | Flächenreiniger | „Dann kommt der Flächenreiniger drauf. Bahn für Bahn über die ganze Fläche – der löst den Dreck schön gleichmäßig.“ |
+| 14,6 – 19,0 s | Hochdruck | „Hartnäckige Stellen nehm ich mir mit dem Strahl einzeln vor.“ |
+| 19,0 – 24,5 s | Abspülen | „Zum Schluss alles gründlich abspülen, bis der ganze Dreck runter ist.“ |
+| 24,5 – 30,2 s | Vorher/Nachher | „Und jetzt der Vergleich …“ *(Pause, der Slider wischt durch)* „Vorher …“ *(ca. 27,4 s)* „… und nachher.“ *(ca. 28,3 s)* „Krass, oder?“ |
+| 30,2 – 32,7 s | Endkarte | „Wie neu! Deine Terrasse auch? Schreib uns.“ |
 
 ## Bearbeiten und neu rendern
 
