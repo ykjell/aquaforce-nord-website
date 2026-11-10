@@ -1,0 +1,97 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #fg-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    .fg-cam {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 55%;
+    }
+    .fg-cam video {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+    }
+    #fg-step {
+      position: absolute;
+      left: 90px;
+      top: 230px;
+      width: 900px;
+    }
+    #fg-num {
+      display: inline-block;
+      font: 700 34px/1 Inter, sans-serif;
+      letter-spacing: 0.18em;
+      color: #04212a;
+      background: #3ee6d8;
+      padding: 12px 20px;
+      border-radius: 8px;
+    }
+    #fg-title {
+      margin-top: 18px;
+      font-family: "League Gothic", sans-serif;
+      font-size: 172px;
+      line-height: 0.92;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow: 0 6px 34px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    .scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 900px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.32) 55%, rgba(0, 0, 0, 0) 100%);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="fegen"
+    data-width="1080"
+    data-height="1920"
+    data-composition-variables='[{"id":"fegenTitle","type":"string","label":"Titel Schritt 1","default":"Abfegen"}]'
+  >
+    <div id="fg-stage">
+      <div id="fg-cam-a" class="fg-cam">
+        <video id="fg-a" class="clip" src="assets/footage/01-fegen.mp4" playsinline data-has-audio="true"
+          data-start="0" data-duration="1.7" data-media-start="0.3" data-playback-rate="2" data-volume="0.35"
+          data-track-index="0"></video>
+      </div>
+      <div id="fg-cam-b" class="fg-cam">
+        <video id="fg-b" class="clip" src="assets/footage/01-fegen.mp4" playsinline data-has-audio="true"
+          data-start="1.7" data-duration="1.6" data-media-start="9" data-playback-rate="2" data-volume="0.35"
+          data-track-index="0"></video>
+      </div>
+      <div id="fg-scrim" class="scrim"></div>
+      <div id="fg-step">
+        <div id="fg-num">SCHRITT 1</div>
+        <div id="fg-title" data-var-text="fegenTitle">Abfegen</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Vertikaler Whip über die vorige Szene
+    tl.fromTo("#fg-stage", { yPercent: 100 }, { yPercent: 0, duration: 0.4, ease: "expo.out" }, 0);
+    tl.fromTo("#fg-cam-a", { scale: 1 }, { scale: 1.06, duration: 1.7, ease: "none" }, 0);
+    tl.fromTo("#fg-cam-b", { scale: 1.1 }, { scale: 1.02, duration: 1.6, ease: "none" }, 1.7);
+    // Schritt-Label
+    tl.fromTo("#fg-num", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 0.25);
+    tl.fromTo("#fg-title", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.35);
+    tl.to(["#fg-num", "#fg-title"], { opacity: 0, filter: "blur(6px)", duration: 0.2, ease: "power2.in" }, 2.85);
+    window.__timelines["fegen"] = tl;
+  </script>
+</template>

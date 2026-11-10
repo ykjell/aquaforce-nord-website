@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      #ground {
+        position: absolute;
+        inset: 0;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Terrassenreinigung – Social-Reel (TikTok / Reels), 1080×1920, 30 fps, ~30 s.
+      Szenen (Sekunden):
+        hook     0.0 – 2.8   Vorher-Foto, Punch-in auf die Flecken
+        fegen    2.5 – 5.8   Schritt 1: Abfegen (2× Tempo)
+        flaeche  5.5 – 12.4  Schritt 2: Flächenreiniger
+        strahl  12.1 – 16.8  Schritt 3: Hochdruck-Detail (Zeitlupe + Punch-ins)
+        spuelen 16.5 – 22.3  Schritt 4: Abspülen (2× Tempo)
+        reveal  22.0 – 30.5  Vorher/Nachher-Slider + Endkarte
+      Jede Szene startet 0,3 s vor dem Ende der vorigen und schiebt sich als vertikaler Whip darüber.
+    -->
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30.5"
+      data-width="1080"
+      data-height="1920"
+      data-motion-blur="on"
+    >
+      <div id="ground"></div>
+
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html"
+        data-start="0" data-duration="2.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 1"></div>
+
+      <div id="fegen" data-composition-id="fegen" data-composition-src="compositions/fegen.html"
+        data-start="2.5" data-duration="3.3" data-track-index="2" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 2"></div>
+
+      <div id="flaeche" data-composition-id="flaeche" data-composition-src="compositions/flaeche.html"
+        data-start="5.5" data-duration="6.9" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 3"></div>
+
+      <div id="strahl" data-composition-id="strahl" data-composition-src="compositions/strahl.html"
+        data-start="12.1" data-duration="4.7" data-track-index="2" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 4"></div>
+
+      <div id="spuelen" data-composition-id="spuelen" data-composition-src="compositions/spuelen.html"
+        data-start="16.5" data-duration="5.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 5"></div>
+
+      <div id="reveal" data-composition-id="reveal" data-composition-src="compositions/reveal.html"
+        data-start="22" data-duration="8.5" data-track-index="2" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 6"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

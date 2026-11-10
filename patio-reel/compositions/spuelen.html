@@ -1,0 +1,95 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #sp-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    .sp-cam {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+    }
+    .sp-cam video {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+    }
+    #sp-step {
+      position: absolute;
+      left: 90px;
+      top: 230px;
+      width: 900px;
+    }
+    #sp-num {
+      display: inline-block;
+      font: 700 34px/1 Inter, sans-serif;
+      letter-spacing: 0.18em;
+      color: #04212a;
+      background: #3ee6d8;
+      padding: 12px 20px;
+      border-radius: 8px;
+    }
+    #sp-title {
+      margin-top: 18px;
+      font-family: "League Gothic", sans-serif;
+      font-size: 172px;
+      line-height: 0.92;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow: 0 6px 34px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    .scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 900px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.32) 55%, rgba(0, 0, 0, 0) 100%);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="spuelen"
+    data-width="1080"
+    data-height="1920"
+    data-composition-variables='[{"id":"spuelenTitle","type":"string","label":"Titel Schritt 4","default":"Abspülen"}]'
+  >
+    <div id="sp-stage">
+      <div id="sp-cam-a" class="sp-cam">
+        <video id="sp-a" class="clip" src="assets/footage/04-abspuelen.mp4" playsinline data-has-audio="true"
+          data-start="0" data-duration="2.6" data-media-start="0.2" data-playback-rate="2" data-volume="0.35"
+          data-track-index="0"></video>
+      </div>
+      <div id="sp-cam-b" class="sp-cam">
+        <video id="sp-b" class="clip" src="assets/footage/04-abspuelen.mp4" playsinline data-has-audio="true"
+          data-start="2.6" data-duration="3.2" data-media-start="8.6" data-playback-rate="2" data-volume="0.35"
+          data-track-index="0"></video>
+      </div>
+      <div id="sp-scrim" class="scrim"></div>
+      <div id="sp-step">
+        <div id="sp-num">SCHRITT 4</div>
+        <div id="sp-title" data-var-text="spuelenTitle">Abspülen</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#sp-stage", { yPercent: 100 }, { yPercent: 0, duration: 0.4, ease: "expo.out" }, 0);
+    tl.fromTo("#sp-cam-a", { scale: 1.04 }, { scale: 1.1, duration: 2.6, ease: "none" }, 0);
+    tl.fromTo("#sp-cam-b", { scale: 1.12 }, { scale: 1.04, duration: 3.2, ease: "none" }, 2.6);
+    tl.fromTo("#sp-num", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 0.25);
+    tl.fromTo("#sp-title", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.35);
+    tl.to(["#sp-num", "#sp-title"], { opacity: 0, filter: "blur(6px)", duration: 0.2, ease: "power2.in" }, 2.6);
+    window.__timelines["spuelen"] = tl;
+  </script>
+</template>

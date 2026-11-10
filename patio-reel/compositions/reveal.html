@@ -1,0 +1,168 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #rv-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    .rv-photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+    }
+    /* Nachher liegt oben und wird per clip-path rechts der Trennlinie freigegeben */
+    #rv-after-wrap {
+      position: absolute;
+      inset: 0;
+      clip-path: inset(0 0 0 100%);
+    }
+    #rv-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 8px;
+      height: 1920px;
+      margin-left: -4px;
+      background: #fff;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+    }
+    #rv-knob {
+      position: absolute;
+      left: -44px;
+      top: 1000px;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font: 900 40px/1 Inter, sans-serif;
+      color: #04212a;
+      letter-spacing: 0.1em;
+    }
+    .rv-tag {
+      position: absolute;
+      top: 250px;
+      font: 700 38px/1 Inter, sans-serif;
+      letter-spacing: 0.16em;
+      padding: 14px 22px;
+      border-radius: 8px;
+    }
+    #rv-tag-before {
+      left: 70px;
+      color: #fff;
+      background: rgba(10, 14, 18, 0.72);
+    }
+    #rv-tag-after {
+      left: 600px;
+      color: #04212a;
+      background: #3ee6d8;
+    }
+    #rv-end {
+      position: absolute;
+      left: 90px;
+      top: 230px;
+      width: 900px;
+    }
+    #rv-claim {
+      font-family: "League Gothic", sans-serif;
+      font-size: 230px;
+      line-height: 0.9;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow: 0 6px 34px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    #rv-brand {
+      margin-top: 22px;
+      display: inline-block;
+      font: 900 50px/1 Inter, sans-serif;
+      letter-spacing: 0.06em;
+      color: #04212a;
+      background: #3ee6d8;
+      padding: 16px 24px;
+      border-radius: 10px;
+    }
+    #rv-service {
+      margin-top: 18px;
+      font: 700 40px/1.2 Inter, sans-serif;
+      color: #fff;
+      text-shadow: 0 4px 22px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="reveal"
+    data-width="1080"
+    data-height="1920"
+    data-composition-variables='[
+      {"id":"claim","type":"string","label":"Schlusszeile","default":"Wie neu."},
+      {"id":"brand","type":"string","label":"Firmenname","default":"AQUAFORCE NORD"},
+      {"id":"service","type":"string","label":"Leistung","default":"Terrassen- & Pflasterreinigung"}
+    ]'
+  >
+    <div id="rv-stage">
+      <img id="rv-before" class="rv-photo" src="assets/photos/vorher.jpg" alt="Terrasse vorher" />
+      <div id="rv-after-wrap">
+        <img id="rv-after" class="rv-photo" src="assets/photos/nachher.jpg" alt="Terrasse nachher" />
+      </div>
+      <div id="rv-line" data-layout-allow-overlap data-layout-allow-overflow><div id="rv-knob">‹ ›</div></div>
+      <div id="rv-tag-before" class="rv-tag">VORHER</div>
+      <div id="rv-tag-after" class="rv-tag">NACHHER</div>
+      <div id="rv-end" data-layout-allow-overlap>
+        <div id="rv-claim" data-var-text="claim">Wie neu.</div>
+        <div id="rv-brand" data-var-text="brand">AQUAFORCE NORD</div>
+        <div id="rv-service" data-var-text="service">Terrassen- &amp; Pflasterreinigung</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const W = 1080;
+    // Trennlinie bei p (0 = ganz links, 1 = ganz rechts); Nachher ist rechts davon sichtbar.
+    // from bleibt als Lesehilfe stehen; die Tweens laufen vom jeweils letzten Stand.
+    const wipe = (from, to, at, dur, ease) => {
+      tl.to("#rv-after-wrap", { clipPath: `inset(0 0 0 ${to * 100}%)`, duration: dur, ease }, at);
+      tl.to("#rv-line", { x: to * W, duration: dur, ease }, at);
+    };
+
+    tl.fromTo("#rv-stage", { yPercent: 100 }, { yPercent: 0, duration: 0.4, ease: "expo.out" }, 0);
+    tl.set("#rv-line", { x: W, opacity: 0 }, 0);
+    tl.set("#rv-line", { opacity: 1 }, 1.1);
+    tl.set("#rv-after-wrap", { clipPath: "inset(0 0 0 100%)" }, 0);
+    tl.set("#rv-tag-after", { opacity: 0 }, 0);
+    tl.set("#rv-end", { opacity: 0 }, 0);
+    // 1) "Vorher" steht kurz
+    tl.fromTo("#rv-tag-before", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 0.3);
+    // 2) Wisch komplett von rechts nach links: alles sauber
+    wipe(1, 0, 1.1, 1.2, "power2.inOut");
+    tl.to("#rv-tag-before", { opacity: 0, duration: 0.2 }, 1.9);
+    // 3) Zurück auf die Mitte: direkter Vergleich
+    wipe(0, 0.5, 2.6, 0.8, "power3.inOut");
+    tl.to("#rv-tag-before", { opacity: 1, duration: 0.25 }, 3.2);
+    tl.fromTo("#rv-tag-after", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 3.25);
+    // 4) Kleines Hin und Her
+    wipe(0.5, 0.32, 3.9, 0.55, "power2.inOut");
+    wipe(0.32, 0.62, 4.45, 0.6, "power2.inOut");
+    // 5) Raus nach links: nur noch Nachher
+    wipe(0.62, 0, 5.3, 0.6, "power3.in");
+    tl.to(["#rv-tag-before", "#rv-tag-after"], { opacity: 0, duration: 0.2 }, 5.3);
+    tl.to("#rv-line", { opacity: 0, duration: 0.15 }, 5.85);
+    // 6) Endkarte
+    tl.set("#rv-end", { opacity: 1 }, 5.95);
+    tl.fromTo("#rv-claim", { opacity: 0, filter: "blur(12px)", scale: 1.08 }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.3, ease: "expo.out", transformOrigin: "0% 50%" }, 5.95);
+    tl.fromTo("#rv-brand", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 6.2);
+    tl.fromTo("#rv-service", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 6.4);
+    window.__timelines["reveal"] = tl;
+  </script>
+</template>

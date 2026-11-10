@@ -1,0 +1,14 @@
+{
+  "name": "patio-reel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.9.29 preview",
+    "check": "npx --yes hyperframes@0.9.29 check",
+    "render": "npx --yes hyperframes@0.9.29 render -o terrasse-reel.mp4",
+    "publish": "npx --yes hyperframes@0.9.29 publish"
+  },
+  "devDependencies": {
+    "hyperframes": "0.9.29"
+  }
+}
