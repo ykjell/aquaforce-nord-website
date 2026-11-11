@@ -1,24 +1,22 @@
 # Terrassenreinigung – Vorher/Nachher-Reel
 
 Ein Hochkant-Reel für TikTok und Instagram, gebaut mit [HyperFrames](https://hyperframes.heygen.com).
-1080×1920, 30 fps, 32,7 s.
+1080×1920, 30 fps, 36,2 s, mit Voiceover.
 
-**Fertige Videos:**
-
-- `export/terrasse-reel.mp4`: mit leisem Originalton (Maschinengeräusch als Atmo, ca. −35 dB im Mittel)
-- `export/terrasse-reel-ohne-ton.mp4`: ohne Ton, für die eigene Sprachaufnahme in CapCut, TikTok oder Instagram
+**Fertiges Video:** `export/terrasse-reel.mp4`. Es enthält deinen Voiceover, darunter leise die Maschinengeräusche.
+Die Lautstärke liegt bei −14 LUFS, dem üblichen Wert für TikTok und Instagram.
 
 ## Schnitt
 
 | Zeit | Szene | Was passiert |
 |---|---|---|
-| 0,0 – 5,0 | **Intro** | Selfie mit „Diese Terrasse war fällig“, harter Schnitt eng auf die Flecken, Schwenk über die Fläche, dann „Das Werkzeug“ (Hochdruck- und Flächenreiniger). Der Clip ist stumm, weil im Original nicht gesprochen wird |
-| 5,0 – 8,0 | **Schritt 1 – Abfegen** | 2× Tempo, 2 Einstellungen |
-| 8,0 – 14,6 | **Schritt 2 – Flächenreiniger** | 1,5× Tempo, 3 Einstellungen. Die mittlere zoomt auf die saubere Bahn |
-| 14,6 – 19,0 | **Schritt 3 – Hochdruck** | 3 kurze Detail-Shots in leichter Zeitlupe, eng auf Düse und Strahl, mit Weißblitz bei jedem Schnitt |
-| 19,0 – 24,5 | **Schritt 4 – Abspülen** | 2× Tempo, 2 Einstellungen |
-| 24,5 – 30,2 | **Vorher/Nachher** | Slider wischt einmal komplett durch, geht zurück auf die Mitte (VORHER / NACHHER), wackelt kurz hin und her und gibt am Ende das ganze Nachher-Bild frei |
-| 30,2 – 32,7 | **Endkarte** | „Wie neu.“ + AQUAFORCE NORD + „Terrassen- & Pflasterreinigung“ |
+| 0,0 – 6,4 | **Intro** | Selfie mit „Diese Terrasse war fällig“, harter Schnitt eng auf die Flecken, Schwenk über die Fläche, dann „Das Werkzeug“ (Hochdruck- und Flächenreiniger) |
+| 6,4 – 9,7 | **Schritt 1 – Abfegen** | 2× Tempo, 2 Einstellungen |
+| 9,7 – 16,6 | **Schritt 2 – Flächenreiniger** | 1,5× Tempo, 3 Einstellungen. Die mittlere zoomt auf die saubere Bahn |
+| 16,6 – 21,0 | **Schritt 3 – Hochdruck** | 3 kurze Detail-Shots in leichter Zeitlupe, eng auf Düse und Strahl, mit Weißblitz bei jedem Schnitt |
+| 21,0 – 26,5 | **Schritt 4 – Abspülen** | 2× Tempo, 2 Einstellungen |
+| 26,5 – 32,8 | **Vorher/Nachher** | Getimt auf die Stimme: VORHER-Label bei „Vorher“, Wisch bei „und nachher“, zurück zur Mitte bei „Krass, oder?“, danach kurz hin und her |
+| 32,8 – 36,2 | **Endkarte** | „Wie neu.“ + AQUAFORCE NORD + „Terrassen- & Pflasterreinigung“ |
 
 Jede Szene schiebt sich mit einem kurzen vertikalen Whip über die vorige.
 
@@ -30,21 +28,29 @@ Steine in Zeitlupe. So wirkt es nach Detailarbeit und nicht nach „geht nicht w
 Das Nachher-Foto ist per Bildabgleich (Homographie) so verzerrt, dass das Pflasterraster
 genau auf dem Vorher-Foto liegt. Nur so wirkt der Slider sauber (`tools/align-photos.py`).
 
-## Sprechertext (durchgehend)
+## Voiceover
 
-Etwa 70 Wörter auf 32,7 s, also ruhiges Sprechtempo mit Luft zum Atmen.
+Die Aufnahme liegt unter `assets/audio/voiceover.wav`. Sie wurde von tiefem Rumpeln befreit, leicht entrauscht und komprimiert
+und ist auf einheitliche Lautstärke gebracht. Jeder Satz ist ein eigener `<audio>`-Clip in `index.html` (`vo-01` bis `vo-14`).
+Dort steht jeweils, wann er im Video kommt (`data-start`) und wo er in der Aufnahme liegt (`data-media-start`).
+Der Satztext steht im `title`.
 
-| Zeit | Bild | Text |
-|---|---|---|
-| 0 – 1,8 s | Selfie | „Leute, diese Terrasse war echt fällig.“ |
-| 1,8 – 3,4 s | Flecken | „Guckt euch mal diese Flecken an.“ |
-| 3,4 – 5,0 s | Werkzeug | „Das ist heute mein Werkzeug.“ |
-| 5,0 – 8,0 s | Abfegen | „Erster Schritt: alles einmal grob abfegen.“ |
-| 8,0 – 14,6 s | Flächenreiniger | „Dann kommt der Flächenreiniger drauf. Bahn für Bahn über die ganze Fläche – der löst den Dreck schön gleichmäßig.“ |
-| 14,6 – 19,0 s | Hochdruck | „Hartnäckige Stellen nehm ich mir mit dem Strahl einzeln vor.“ |
-| 19,0 – 24,5 s | Abspülen | „Zum Schluss alles gründlich abspülen, bis der ganze Dreck runter ist.“ |
-| 24,5 – 30,2 s | Vorher/Nachher | „Und jetzt der Vergleich …“ *(Pause, der Slider wischt durch)* „Vorher …“ *(ca. 27,4 s)* „… und nachher.“ *(ca. 28,3 s)* „Krass, oder?“ |
-| 30,2 – 32,7 s | Endkarte | „Wie neu! Deine Terrasse auch? Schreib uns.“ |
+| Video | Satz |
+|---|---|
+| 0,2 s | „Leute, diese Terrasse war echt fällig.“ |
+| 2,9 s | „Guckt euch mal diese Flecken an.“ |
+| 4,7 s | „Das ist heute mein Werkzeug.“ |
+| 6,4 s | „Erster Schritt, alles einmal grob abfegen.“ |
+| 9,7 s | „Dann kommt der Flächenreiniger drauf, Bahn für Bahn über die ganze Fläche.“ |
+| 13,9 s | „Der löst den Dreck schön gleichmäßig.“ |
+| 16,6 s | „Hartnäckige Stellen nehme ich mir mit dem Strahl einzeln vor.“ |
+| 21,0 s | „Zum Schluss alles gründlich abspülen, bis der ganze Dreck runter ist.“ |
+| 26,5 s | „Und jetzt der Vergleich.“ |
+| 28,1 s | „Vorher …“ |
+| 29,2 s | „… und nachher.“ |
+| 30,5 s | „Krass, oder?“ |
+| 32,8 s | „Wie neu.“ |
+| 33,7 s | „Deine Terrasse auch? Schreib uns.“ |
 
 ## Bearbeiten und neu rendern
 
@@ -53,7 +59,7 @@ npm install                       # installiert hyperframes 0.9.29
 ./prepare-footage.sh IMG_6375.mov IMG_6376.mov IMG_6381.mov IMG_6384.mov intro.mp4   # HDR → SDR, nach assets/footage/
 npx hyperframes preview           # Studio-Vorschau im Browser
 npm run check                     # Lint + Layout + Kontrast
-npm run render                    # → terrasse-reel.mp4
+npm run render                    # → terrasse-reel.mp4 (danach für Social auf −14 LUFS normalisieren)
 ```
 
 Texte wie Hook-Zeilen, Schritt-Titel, Schlusszeile, Firmenname und Leistung sind

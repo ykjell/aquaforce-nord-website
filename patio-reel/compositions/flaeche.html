@@ -70,17 +70,17 @@
     <div id="fl-stage">
       <div id="fl-cam-a" class="fl-cam">
         <video id="fl-a" class="clip" src="assets/footage/02-flaechenreiniger.mp4" playsinline data-has-audio="true"
-          data-start="0" data-duration="2.2" data-media-start="1" data-playback-rate="1.5" data-volume="0.35"
+          data-start="0" data-duration="2.2" data-media-start="1" data-playback-rate="1.5" data-volume="0.14"
           data-track-index="0"></video>
       </div>
       <div id="fl-cam-b" class="fl-cam">
         <video id="fl-b" class="clip" src="assets/footage/02-flaechenreiniger.mp4" playsinline data-has-audio="true"
-          data-start="2.2" data-duration="2.4" data-media-start="9.5" data-playback-rate="1.5" data-volume="0.35"
+          data-start="2.2" data-duration="2.4" data-media-start="9.5" data-playback-rate="1.5" data-volume="0.14"
           data-track-index="0"></video>
       </div>
       <div id="fl-cam-c" class="fl-cam">
         <video id="fl-c" class="clip" src="assets/footage/02-flaechenreiniger.mp4" playsinline data-has-audio="true"
-          data-start="4.6" data-duration="2.3" data-media-start="19.8" data-playback-rate="1.5" data-volume="0.35"
+          data-start="4.6" data-duration="2.6" data-media-start="19.8" data-playback-rate="1.5" data-volume="0.14"
           data-track-index="0"></video>
       </div>
       <div id="fl-scrim" class="scrim"></div>
@@ -96,7 +96,7 @@
     tl.fromTo("#fl-cam-a", { scale: 1 }, { scale: 1.05, duration: 2.2, ease: "none" }, 0);
     // Punch-in auf die saubere Bahn
     tl.fromTo("#fl-cam-b", { scale: 1.4 }, { scale: 1.48, duration: 2.4, ease: "none" }, 2.2);
-    tl.fromTo("#fl-cam-c", { scale: 1.08 }, { scale: 1, duration: 2.3, ease: "none" }, 4.6);
+    tl.fromTo("#fl-cam-c", { scale: 1.08 }, { scale: 1, duration: 2.6, ease: "none" }, 4.6);
     tl.fromTo("#fl-num", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 0.25);
     tl.fromTo("#fl-title", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.35);
     tl.to(["#fl-num", "#fl-title"], { opacity: 0, filter: "blur(6px)", duration: 0.2, ease: "power2.in" }, 2.6);

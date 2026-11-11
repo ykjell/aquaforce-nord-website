@@ -136,33 +136,37 @@
       tl.to("#rv-line", { x: to * W, duration: dur, ease }, at);
     };
 
+    // Getimt auf den Voiceover: "Und jetzt der Vergleich" 0.3 · "Vorher" 1.9 · "und nachher" 3.0
+    // · "Krass, oder?" 4.3 · "Wie neu!" 6.6 · "Deine Terrasse auch? Schreib uns." 7.45
     tl.fromTo("#rv-stage", { yPercent: 100 }, { yPercent: 0, duration: 0.4, ease: "expo.out" }, 0);
     tl.set("#rv-line", { x: W, opacity: 0 }, 0);
-    tl.set("#rv-line", { opacity: 1 }, 1.1);
     tl.set("#rv-after-wrap", { clipPath: "inset(0 0 0 100%)" }, 0);
     tl.set("#rv-tag-after", { opacity: 0 }, 0);
     tl.set("#rv-end", { opacity: 0 }, 0);
-    // 1) "Vorher" steht kurz
-    tl.fromTo("#rv-tag-before", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 0.3);
-    // 2) Wisch komplett von rechts nach links: alles sauber
-    wipe(1, 0, 1.1, 1.2, "power2.inOut");
-    tl.to("#rv-tag-before", { opacity: 0, duration: 0.2 }, 1.9);
-    // 3) Zurück auf die Mitte: direkter Vergleich
-    wipe(0, 0.5, 2.6, 0.8, "power3.inOut");
-    tl.to("#rv-tag-before", { opacity: 1, duration: 0.25 }, 3.2);
-    tl.fromTo("#rv-tag-after", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 3.25);
+    // 1) Vorher steht, das Label schlägt bei "Vorher" nochmal an
+    tl.fromTo("#rv-tag-before", { opacity: 0, x: -40, scale: 1 }, { opacity: 1, x: 0, scale: 1, duration: 0.35, ease: "expo.out", transformOrigin: "0% 50%" }, 0.3);
+    tl.set("#rv-tag-before", { scale: 1.15 }, 1.9);
+    tl.to("#rv-tag-before", { scale: 1, duration: 0.3, ease: "expo.out" }, 1.9);
+    // 2) "und nachher": Wisch komplett von rechts nach links
+    tl.set("#rv-line", { opacity: 1 }, 2.85);
+    wipe(1, 0, 2.9, 1.0, "power2.inOut");
+    tl.to("#rv-tag-before", { opacity: 0, duration: 0.2 }, 3.4);
+    tl.fromTo("#rv-tag-after", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 3.75);
+    // 3) "Krass, oder?": zurück auf die Mitte, direkter Vergleich
+    wipe(0, 0.5, 4.2, 0.7, "power3.inOut");
+    tl.to("#rv-tag-before", { opacity: 1, duration: 0.25 }, 4.75);
     // 4) Kleines Hin und Her
-    wipe(0.5, 0.32, 3.9, 0.55, "power2.inOut");
-    wipe(0.32, 0.62, 4.45, 0.6, "power2.inOut");
+    wipe(0.5, 0.32, 5.1, 0.5, "power2.inOut");
+    wipe(0.32, 0.62, 5.6, 0.45, "power2.inOut");
     // 5) Raus nach links: nur noch Nachher
-    wipe(0.62, 0, 5.3, 0.6, "power3.in");
-    tl.to(["#rv-tag-before", "#rv-tag-after"], { opacity: 0, duration: 0.2 }, 5.3);
-    tl.to("#rv-line", { opacity: 0, duration: 0.15 }, 5.85);
-    // 6) Endkarte
-    tl.set("#rv-end", { opacity: 1 }, 5.95);
-    tl.fromTo("#rv-claim", { opacity: 0, filter: "blur(12px)", scale: 1.08 }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.3, ease: "expo.out", transformOrigin: "0% 50%" }, 5.95);
-    tl.fromTo("#rv-brand", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 6.2);
-    tl.fromTo("#rv-service", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 6.4);
+    wipe(0.62, 0, 6.05, 0.5, "power3.in");
+    tl.to(["#rv-tag-before", "#rv-tag-after"], { opacity: 0, duration: 0.2 }, 6.05);
+    tl.to("#rv-line", { opacity: 0, duration: 0.12 }, 6.5);
+    // 6) Endkarte auf "Wie neu!"
+    tl.set("#rv-end", { opacity: 1 }, 6.6);
+    tl.fromTo("#rv-claim", { opacity: 0, filter: "blur(12px)", scale: 1.08 }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.3, ease: "expo.out", transformOrigin: "0% 50%" }, 6.6);
+    tl.fromTo("#rv-brand", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 7.0);
+    tl.fromTo("#rv-service", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 7.25);
     window.__timelines["reveal"] = tl;
   </script>
 </template>
