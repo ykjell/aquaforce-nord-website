@@ -37,11 +37,11 @@ Der Satztext steht im `title`.
 
 | Video | Satz |
 |---|---|
-| 0,2 s | „Leute, diese Terrasse war echt fällig.“ |
-| 2,9 s | „Guckt euch mal diese Flecken an.“ |
-| 4,7 s | „Das ist heute mein Werkzeug.“ |
-| 6,4 s | „Erster Schritt, alles einmal grob abfegen.“ |
-| 9,7 s | „Dann kommt der Flächenreiniger drauf, Bahn für Bahn über die ganze Fläche.“ |
+| 0,2 s | Intro Satz 1 (neu aufgenommen, `voiceover-intro.wav`) |
+| 2,9 s | Intro Satz 2 (neu aufgenommen, `voiceover-intro.wav`) |
+| 4,8 s | „Das ist heute mein Werkzeug.“ |
+| 6,6 s | „Erster Schritt, alles einmal grob abfegen.“ |
+| 9,8 s | „Dann kommt der Flächenreiniger drauf, Bahn für Bahn über die ganze Fläche.“ |
 | 13,9 s | „Der löst den Dreck schön gleichmäßig.“ |
 | 16,6 s | „Hartnäckige Stellen nehme ich mir mit dem Strahl einzeln vor.“ |
 | 21,0 s | „Zum Schluss alles gründlich abspülen, bis der ganze Dreck runter ist.“ |
