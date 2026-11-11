@@ -1,0 +1,169 @@
+<!doctype html>
+<html
+  lang="de"
+  data-composition-variables='[
+    {"id":"kicker","type":"string","label":"Oberzeile","default":"NEUESTER AUFTRAG"},
+    {"id":"line1","type":"string","label":"Titel Zeile 1","default":"Terrasse"},
+    {"id":"line2","type":"string","label":"Titel Zeile 2","default":"wie neu"},
+    {"id":"brand","type":"string","label":"Firmenname","default":"AQUAFORCE NORD"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+      .photo {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+      /* Nachher unten rechts, diagonale Kante von links unten nach rechts oben */
+      #cv-after-wrap {
+        position: absolute;
+        inset: 0;
+        clip-path: polygon(0 1330px, 1080px 930px, 1080px 1920px, 0 1920px);
+      }
+      #cv-seam {
+        position: absolute;
+        inset: 0;
+      }
+      /* Abdunklung oben für die Schrift */
+      #cv-scrim {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1100px;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0) 100%);
+      }
+      #cv-scrim-low {
+        position: absolute;
+        left: 0;
+        top: 1500px;
+        width: 1080px;
+        height: 420px;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.38) 100%);
+      }
+      #cv-copy {
+        position: absolute;
+        left: 80px;
+        top: 300px;
+        width: 920px;
+      }
+      #cv-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        font: 900 46px/1 Inter, sans-serif;
+        letter-spacing: 0.14em;
+        color: #04212a;
+        background: #3ee6d8;
+        padding: 18px 28px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+      #cv-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #04212a;
+      }
+      .cv-line {
+        font-family: "League Gothic", sans-serif;
+        font-size: 300px;
+        line-height: 0.86;
+        color: #fff;
+        text-transform: uppercase;
+        text-shadow: 0 10px 50px rgba(0, 0, 0, 0.6), 0 3px 6px rgba(0, 0, 0, 0.6);
+      }
+      #cv-line1 {
+        margin-top: 34px;
+      }
+      #cv-line2 {
+        color: #3ee6d8;
+      }
+      .cv-tag {
+        position: absolute;
+        font: 700 40px/1 Inter, sans-serif;
+        letter-spacing: 0.16em;
+        padding: 16px 24px;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      }
+      #cv-tag-before {
+        left: 80px;
+        top: 1070px;
+        color: #fff;
+        background: rgba(10, 14, 18, 0.78);
+      }
+      #cv-tag-after {
+        right: 80px;
+        top: 1060px;
+        color: #04212a;
+        background: #3ee6d8;
+      }
+      #cv-brand {
+        position: absolute;
+        left: 0;
+        top: 1560px;
+        width: 1080px;
+        text-align: center;
+        font: 900 54px/1 Inter, sans-serif;
+        letter-spacing: 0.12em;
+        color: #fff;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="cover"
+      data-start="0"
+      data-duration="1"
+      data-width="1080"
+      data-height="1920"
+      data-no-timeline
+    >
+      <img id="cv-before" class="photo" src="assets/photos/vorher.jpg" alt="Terrasse vorher" />
+      <div id="cv-after-wrap">
+        <img id="cv-after" class="photo" src="assets/photos/nachher.jpg" alt="Terrasse nachher" />
+      </div>
+      <svg id="cv-seam" width="1080" height="1920" viewBox="0 0 1080 1920" data-layout-ignore>
+        <line x1="-20" y1="1337" x2="1100" y2="922" stroke="rgba(0,0,0,0.35)" stroke-width="26" />
+        <line x1="-20" y1="1337" x2="1100" y2="922" stroke="#ffffff" stroke-width="10" />
+      </svg>
+      <div id="cv-scrim"></div>
+      <div id="cv-scrim-low"></div>
+      <div id="cv-copy" data-layout-allow-overlap>
+        <div id="cv-kicker"><span id="cv-dot"></span><span data-var-text="kicker">NEUESTER AUFTRAG</span></div>
+        <div id="cv-line1" class="cv-line" data-var-text="line1">Terrasse</div>
+        <div id="cv-line2" class="cv-line" data-var-text="line2">wie neu</div>
+      </div>
+      <div id="cv-tag-before" class="cv-tag">VORHER</div>
+      <div id="cv-tag-after" class="cv-tag">NACHHER</div>
+      <div id="cv-brand" data-var-text="brand">AQUAFORCE NORD</div>
+    </div>
+  </body>
+</html>

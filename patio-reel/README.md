@@ -68,3 +68,14 @@ Schnittpunkte stehen als `data-media-start` (Startpunkt im Clip), `data-duration
 `data-playback-rate` (Tempo) direkt an den `<video>`-Tags in `compositions/*.html`.
 
 Die Original-Clips liegen nicht im Repo, weil sie zu groß sind. `assets/footage/` steht in `.gitignore`.
+
+## Titelbild
+
+`export/titelbild.jpg` (und `.png`), 1080×1920. Das Bild ist diagonal geteilt: oben die Vorher-, unten die Nachher-Seite.
+Darauf stehen „NEUESTER AUFTRAG“, „TERRASSE WIE NEU“ und AQUAFORCE NORD.
+Die Quelle ist `cover/index.html`, eine eigene HyperFrames-Szene. Oberzeile, Titel und Firmenname sind dort Variablen.
+Neu exportieren:
+
+```bash
+cd cover && npx hyperframes snapshot . --at 0 --output ../snapshots/cover
+```
