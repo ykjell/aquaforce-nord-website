@@ -45,30 +45,27 @@
       .chip.aqua { background: var(--aqua); color: var(--navy); }
 
       /* Brand bug */
-      .bug { position: absolute; left: 64px; top: 190px; }
-      .bug-in { display: flex; align-items: center; gap: 14px; }
-      .bug-mark { width: 44px; height: 44px; }
-      .bug-w { font-family: var(--disp); font-weight: 800; font-style: italic; font-size: 40px; letter-spacing: 0.04em; color: var(--white); text-shadow: 0 2px 14px rgba(3, 12, 22, 0.6); }
-      .bug-w b { font-weight: 800; color: var(--aqua); margin-left: 10px; }
+      .bug { position: absolute; left: 826px; top: 176px; width: 200px; height: 136px; }
+      .bug-logo { position: absolute; left: 0; top: 0; width: 200px; height: 136px; }
 
       /* End card */
       .end { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-      .end-bg { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 38%, #0d3357 0%, #06192b 62%); }
+      .end-bg { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 30%, #0f3d68 0%, #06192b 62%); }
       .end-sweep { position: absolute; left: 0; top: 100%; width: 1080px; height: 480px; background: linear-gradient(180deg, #18c8ff 0%, #18c8ff 40%, rgba(24, 200, 255, 0) 100%); margin-top: -240px; }
-      .end-stack { position: absolute; left: 0; top: 520px; width: 1080px; display: flex; flex-direction: column; align-items: center; }
-      .end-mark { width: 150px; height: 150px; }
-      .end-word { margin-top: 30px; font-family: var(--disp); font-weight: 900; font-style: italic; font-size: 212px; line-height: 0.9; letter-spacing: -0.005em; color: var(--white); }
-      .end-clip { display: block; overflow: hidden; padding: 0.04em 0.06em 0 0.02em; }
-      .end-clip > span { display: block; }
-      .end-nord { margin-top: 10px; display: flex; align-items: center; gap: 30px; font-family: var(--disp); font-weight: 700; font-size: 64px; color: var(--aqua); }
-      .end-nord span { letter-spacing: 0.52em; margin-right: -0.52em; padding-left: 0.1em; }
-      .end-nord i { display: block; width: 190px; height: 4px; background: var(--aqua); }
-      .end-nord i:first-child { transform-origin: 100% 50%; }
-      .end-nord i:last-child { transform-origin: 0 50%; margin-left: 30px; }
-      .end-sub { margin-top: 46px; font-family: var(--body); font-weight: 400; font-size: 38px; letter-spacing: 0.02em; color: rgba(244, 248, 251, 0.82); }
-      .end-cta { margin-top: 70px; display: flex; align-items: center; gap: 18px; height: 116px; padding: 0 54px; border-radius: 58px; background: var(--aqua); font-family: var(--disp); font-weight: 800; font-size: 60px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--navy); }
-      .end-cta svg { width: 50px; height: 50px; }
-      .end-note { margin-top: 40px; font-family: var(--mono); font-weight: 700; font-size: 28px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(244, 248, 251, 0.6); }
+      .end-stack { position: absolute; left: 0; top: 200px; width: 1080px; display: flex; flex-direction: column; align-items: center; }
+      .end-logo { width: 760px; height: 516px; }
+      .end-kicker { margin-top: 26px; display: flex; align-items: center; gap: 24px; font-family: var(--mono); font-weight: 700; font-size: 30px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white); }
+      .end-kicker i { display: block; width: 70px; height: 4px; background: var(--aqua); }
+      .end-kicker i:first-child { transform-origin: 100% 50%; }
+      .end-kicker i:last-child { transform-origin: 0 50%; }
+      .end-price { margin-top: 14px; display: flex; align-items: baseline; gap: 22px; font-family: var(--disp); font-weight: 800; text-transform: uppercase; color: var(--white); }
+      .end-price .ab { font-size: 54px; letter-spacing: 0.02em; }
+      .end-price .eur { font-weight: 900; font-style: italic; font-size: 196px; line-height: 1; color: var(--aqua); }
+      .end-price .qm { font-size: 54px; letter-spacing: 0.02em; }
+      .end-cta { margin-top: 26px; display: flex; align-items: center; gap: 18px; height: 112px; padding: 0 54px; border-radius: 56px; background: var(--aqua); font-family: var(--disp); font-weight: 800; font-size: 58px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--navy); }
+      .end-cta svg { width: 48px; height: 48px; }
+      .end-contact { margin-top: 34px; font-family: var(--disp); font-weight: 700; font-size: 64px; letter-spacing: 0.03em; color: var(--white); }
+      .end-web { margin-top: 2px; font-family: var(--body); font-weight: 700; font-size: 36px; letter-spacing: 0.02em; color: var(--aqua); }
       .edge { position: absolute; left: 0; top: 0; width: 40px; height: 1920px; opacity: 0; background: linear-gradient(90deg, #ffffff 0, #18c8ff 12px, rgba(24, 200, 255, 0) 40px); }
       .num { position: absolute; left: 64px; font-family: var(--disp); font-weight: 900; font-style: italic; font-size: 260px; line-height: 0.85; color: var(--aqua); text-shadow: 0 4px 34px rgba(3, 12, 22, 0.55); }
       .ring { position: absolute; width: 190px; height: 190px; margin: -95px 0 0 -95px; border: 7px solid var(--aqua); border-radius: 50%; box-shadow: 0 0 0 3px rgba(6, 25, 43, 0.55); }
@@ -81,7 +78,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="17.0" data-width="1080" data-height="1920" data-fps="30">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.2" data-width="1080" data-height="1920" data-fps="30">
       <div class="bgfill"></div>
 
       <!-- S1: Seitenweg – Schieberegler (Vorher unten, Nachher darüber, per clip-path) -->
@@ -144,22 +141,19 @@
       </div>
 
       <div id="bug" class="clip bug" data-start="0" data-duration="14.2" data-track-index="8">
-        <div class="bug-in" id="bug-in">
-          <svg class="bug-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
-          <span class="bug-w">AQUAFORCE<b>NORD</b></span>
-        </div>
+        <img class="bug-logo" id="bug-in" src="assets/img/logo_sticker.png" alt="AquaForce-Nord" />
       </div>
 
-      <div id="end" class="clip end" data-start="13.6" data-duration="3.4" data-track-index="9">
+      <div id="end" class="clip end" data-start="13.6" data-duration="4.6" data-track-index="9">
         <div class="end-bg" id="end-bg"></div>
         <div class="end-sweep" id="end-sweep" data-layout-ignore></div>
         <div class="end-stack">
-          <svg class="end-mark" id="end-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
-          <div class="end-word"><span class="end-clip"><span id="end-w1">AQUAFORCE</span></span></div>
-          <div class="end-nord"><i id="end-l1"></i><span id="end-w2">NORD</span><i id="end-l2"></i></div>
-          <div class="end-sub" id="end-sub">Professionelle Hochdruckreinigung</div>
-          <div class="end-cta" id="end-cta"><span>Jetzt Angebot anfragen</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="end-note" id="end-note">Terrassen · Einfahrten · Gehwege</div>
+          <img class="end-logo" id="end-logo" src="assets/img/logo_sticker.png" alt="AquaForce-Nord" />
+          <div class="end-kicker" id="end-kicker"><i id="end-l1"></i><span>Pflasterreinigung vom Profi</span><i id="end-l2"></i></div>
+          <div class="end-price" id="end-price"><span class="ab">schon ab</span><span class="eur">2,49&nbsp;€</span><span class="qm">pro m²</span></div>
+          <div class="end-cta" id="end-cta"><span>Jetzt Angebot sichern</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="end-contact" id="end-c1">+49 176 438 57587</div>
+          <div class="end-web" id="end-c2">www.aquaforce-nord.de</div>
         </div>
       </div>
     </div>
@@ -223,13 +217,12 @@
       // ---- Endkarte
       tl.fromTo("#end-bg", { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.inOut" }, 13.6);
       tl.fromTo("#end-sweep", { y: 0 }, { y: -2400, duration: 0.5, ease: "power3.inOut" }, 13.6);
-      tl.fromTo("#end-mark", { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.6)" }, 13.6 + 0.34);
-      tl.fromTo("#end-w1", { yPercent: 105 }, { yPercent: 0, duration: 0.6, ease: "expo.out" }, 13.6 + 0.42);
-      tl.fromTo("#end-w2", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 13.6 + 0.62);
-      tl.fromTo(["#end-l1", "#end-l2"], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 13.6 + 0.62);
-      tl.fromTo("#end-sub", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 13.6 + 0.9);
-      tl.fromTo("#end-cta", { opacity: 0, y: 34, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 13.6 + 1.15);
-      tl.fromTo("#end-note", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 13.6 + 1.45);
+      tl.fromTo("#end-logo", { opacity: 0, scale: 0.72, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: "back.out(1.4)" }, 13.6 + 0.34);
+      tl.fromTo("#end-kicker", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 13.6 + 0.8);
+      tl.fromTo(["#end-l1", "#end-l2"], { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 13.6 + 0.8);
+      tl.fromTo("#end-price", { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 13.6 + 1.0);
+      tl.fromTo("#end-cta", { opacity: 0, y: 34, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 13.6 + 1.4);
+      tl.fromTo(["#end-c1", "#end-c2"], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 13.6 + 1.75);
       window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;
     </script>

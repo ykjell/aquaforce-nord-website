@@ -16,27 +16,33 @@ const head = (title) => `<!doctype html>
 ${brandCss}
     </style>`;
 
-// Dauerhaftes Marken-Signet oben links (innerhalb der Safe-Zone, y > 168 px)
+// Markendaten: hier zentral ändern, gilt für alle fünf Reels
+const BRAND = {
+  phone: "+49 176 438 57587",
+  web: "www.aquaforce-nord.de",
+  mail: "info@aquaforce-nord.de",
+  price: "2,49",
+};
+const END_DUR = 4.6;
+
+// Dauerhaftes Logo oben rechts (innerhalb der Safe-Zone, y > 168 px)
 const bug = (a, d) => `
       <div id="bug" class="clip bug" data-start="${a}" data-duration="${d}" data-track-index="8">
-        <div class="bug-in" id="bug-in">
-          <svg class="bug-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
-          <span class="bug-w">AQUAFORCE<b>NORD</b></span>
-        </div>
+        <img class="bug-logo" id="bug-in" src="assets/img/logo_sticker.png" alt="AquaForce-Nord" />
       </div>`;
 
-// Gemeinsame Endkarte (3,4 s): Wasser-Wisch -> Wortmarke -> CTA
+// Gemeinsame Endkarte: Wasser-Wisch -> Logo -> Preisangebot -> CTA -> Kontakt
 const endcard = (a) => `
-      <div id="end" class="clip end" data-start="${a}" data-duration="3.4" data-track-index="9">
+      <div id="end" class="clip end" data-start="${a}" data-duration="${END_DUR}" data-track-index="9">
         <div class="end-bg" id="end-bg"></div>
         <div class="end-sweep" id="end-sweep" data-layout-ignore></div>
         <div class="end-stack">
-          <svg class="end-mark" id="end-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
-          <div class="end-word"><span class="end-clip"><span id="end-w1">AQUAFORCE</span></span></div>
-          <div class="end-nord"><i id="end-l1"></i><span id="end-w2">NORD</span><i id="end-l2"></i></div>
-          <div class="end-sub" id="end-sub">Professionelle Hochdruckreinigung</div>
-          <div class="end-cta" id="end-cta"><span>Jetzt Angebot anfragen</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="end-note" id="end-note">Terrassen · Einfahrten · Gehwege</div>
+          <img class="end-logo" id="end-logo" src="assets/img/logo_sticker.png" alt="AquaForce-Nord" />
+          <div class="end-kicker" id="end-kicker"><i id="end-l1"></i><span>Pflasterreinigung vom Profi</span><i id="end-l2"></i></div>
+          <div class="end-price" id="end-price"><span class="ab">schon ab</span><span class="eur">${BRAND.price}&nbsp;€</span><span class="qm">pro m²</span></div>
+          <div class="end-cta" id="end-cta"><span>Jetzt Angebot sichern</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="end-contact" id="end-c1">${BRAND.phone}</div>
+          <div class="end-web" id="end-c2">${BRAND.web}</div>
         </div>
       </div>`;
 
@@ -44,13 +50,12 @@ const endTl = (a) => `
       // ---- Endkarte
       tl.fromTo("#end-bg", { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.inOut" }, ${a});
       tl.fromTo("#end-sweep", { y: 0 }, { y: -2400, duration: 0.5, ease: "power3.inOut" }, ${a});
-      tl.fromTo("#end-mark", { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.6)" }, ${a} + 0.34);
-      tl.fromTo("#end-w1", { yPercent: 105 }, { yPercent: 0, duration: 0.6, ease: "expo.out" }, ${a} + 0.42);
-      tl.fromTo("#end-w2", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, ${a} + 0.62);
-      tl.fromTo(["#end-l1", "#end-l2"], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, ${a} + 0.62);
-      tl.fromTo("#end-sub", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, ${a} + 0.9);
-      tl.fromTo("#end-cta", { opacity: 0, y: 34, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, ${a} + 1.15);
-      tl.fromTo("#end-note", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, ${a} + 1.45);`;
+      tl.fromTo("#end-logo", { opacity: 0, scale: 0.72, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: "back.out(1.4)" }, ${a} + 0.34);
+      tl.fromTo("#end-kicker", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, ${a} + 0.8);
+      tl.fromTo(["#end-l1", "#end-l2"], { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, ${a} + 0.8);
+      tl.fromTo("#end-price", { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, ${a} + 1.0);
+      tl.fromTo("#end-cta", { opacity: 0, y: 34, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, ${a} + 1.4);
+      tl.fromTo(["#end-c1", "#end-c2"], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.12 }, ${a} + 1.75);`;
 
 const helpers = `
       const tl = gsap.timeline({ paused: true });
