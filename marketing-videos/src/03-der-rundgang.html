@@ -1,0 +1,86 @@
+{{HEAD AquaForce-Nord · 03 Der Rundgang}}
+    <style>
+      .pane { position: absolute; left: 0; width: 1080px; height: 960px; overflow: hidden; }
+      .pane video { position: absolute; left: 0; top: -520px; width: 1080px; height: 1920px; object-fit: cover; }
+      .band { position: absolute; left: 0; top: 850px; width: 1080px; height: 220px; }
+      .band-bg { position: absolute; inset: 0; background: var(--navy); border-top: 6px solid var(--aqua); border-bottom: 6px solid var(--aqua); }
+      .band-t { position: absolute; left: 0; top: 0; width: 1080px; height: 220px; display: flex; align-items: center; justify-content: center; font-family: var(--disp); font-weight: 800; font-size: 122px; letter-spacing: -0.01em; text-transform: uppercase; overflow: hidden; }
+      .band-t span { display: block; }
+      .divider { position: absolute; left: 0; top: 954px; width: 1080px; height: 12px; background: var(--aqua); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.4" data-width="1080" data-height="1920" data-fps="30">
+      <div class="bgfill"></div>
+
+      <!-- S1: synchroner Rundgang – oben Vorher, unten Nachher -->
+      <div class="pane" id="pa" style="top: 0"><div class="cam" id="ca" style="position:absolute;inset:0">
+        <video id="va" class="clip" muted playsinline src="assets/clips/c_walk.mp4" data-start="0" data-duration="8.0" data-media-start="0.3" data-track-index="1"></video>
+      </div></div>
+      <div class="pane" id="pb" style="top: 960px"><div class="cam" id="cb" style="position:absolute;inset:0">
+        <video id="vb" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="0" data-duration="8.0" data-media-start="3.2" data-playback-rate="1.08" data-track-index="2"></video>
+      </div></div>
+      <div id="div" class="clip divider" data-start="0" data-duration="8.0" data-track-index="3"></div>
+      <div id="band" class="clip band" data-start="0" data-duration="2.9" data-track-index="6" data-layout-allow-occlusion>
+        <div class="band-bg" id="band-bg"></div>
+        <div class="band-t"><span id="band-in">Gleicher <em style="font-style:normal;color:var(--aqua)">Rundgang.</em></span></div>
+      </div>
+      <div id="ka" class="clip chip dark" style="left: 64px; top: 290px" data-start="0" data-duration="7.9" data-track-index="7"><span id="ka-in">Vorher</span></div>
+      <div id="kb" class="clip chip aqua" style="left: 64px; top: 1100px" data-start="0" data-duration="7.9" data-track-index="7" data-layout-allow-caption-zone><span id="kb-in">Nachher</span></div>
+
+      <!-- S2: Nachher übernimmt das ganze Bild -->
+      <div class="shot" id="s2"><div class="cam" id="c2">
+        <video id="v2" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="7.5" data-duration="1.5" data-media-start="11.3" data-playback-rate="1.08" data-track-index="4"></video>
+      </div></div>
+      <div class="shot" id="s2b"><div class="cam" id="c2b">
+        <video id="v2b" class="clip" muted playsinline src="assets/clips/b_walk.mp4" data-start="9.0" data-duration="2.5" data-media-start="7.6" data-track-index="4"></video>
+      </div></div>
+      <div class="shot" id="s3"><div class="cam" id="c3">
+        <video id="v3" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="10.9" data-duration="3.3" data-media-start="0.4" data-track-index="5"></video>
+      </div></div>
+      <div id="scrim" class="clip scrim top" data-start="0" data-duration="14.6" data-track-index="5"></div>
+      <div class="edge" id="e3" data-layout-ignore></div>
+
+      <div id="t2" class="clip hl" style="top: 300px" data-start="9.0" data-duration="2.0" data-track-index="6">
+        <span class="ln"><span id="t2a">So sieht</span></span>
+        <span class="ln"><span id="t2b"><em>fertig</em> aus.</span></span>
+      </div>
+      <div id="g3" class="clip tag" style="top: 320px" data-start="11.2" data-duration="3.4" data-track-index="7"><i id="g3-i"></i><span id="g3-in">Terrasse &amp; Gehweg</span></div>
+      <div id="t3" class="clip hl" style="top: 390px" data-start="11.2" data-duration="3.4" data-track-index="6">
+        <span class="ln"><span id="t3a">Jeder Stein.</span></span>
+        <span class="ln"><span id="t3b"><em>Jede Fuge.</em></span></span>
+      </div>
+{{BUG 0 14.6}}
+{{ENDCARD 14.0}}
+    </div>
+    <script>
+{{HELPERS}}
+
+      // S1: Band mit der Ansage steht ab Frame 0 und zieht sich zur Trennlinie zusammen
+      tl.to("#band-in", { yPercent: -130, duration: 0.3, ease: "power3.in" }, 2.3);
+      tl.to("#band-bg", { scaleY: 0.05, duration: 0.4, ease: "power3.inOut" }, 2.45);
+      tl.fromTo("#ca", { scale: 1.06 }, { scale: 1.0, duration: 8, ease: "none" }, 0);
+      tl.fromTo("#cb", { scale: 1.06 }, { scale: 1.0, duration: 8, ease: "none" }, 0);
+
+      // S2: die Nachher-Hälfte läuft weiter und übernimmt das ganze Bild
+      tl.fromTo("#s2", { clipPath: "inset(50% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.fromTo("#c2", { y: 440 }, { y: 0, duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.to("#div", { y: -980, duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.to(["#ka", "#kb"], { opacity: 0, duration: 0.2 }, 7.45);
+      // Schnitt auf das Ergebnis in der Sonne
+      tl.fromTo("#c2b", { scale: 1.2, transformOrigin: "50% 60%" }, { scale: 1.05, duration: 2.1, ease: "power3.out" }, 9.0);
+      up(["#t2a", "#t2b"], 9.1);
+      out(["#t2a", "#t2b"], 10.6);
+
+      // S3: Terrasse, sauber
+      sweep("#s3", "#e3", 10.9, 0.5);
+      tl.fromTo("#c3", { scale: 1.12, transformOrigin: "50% 55%" }, { scale: 1.03, duration: 3.3, ease: "power1.out" }, 10.9);
+      tl.fromTo("#g3-i", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 11.3);
+      tl.fromTo("#g3-in", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 11.35);
+      up(["#t3a", "#t3b"], 11.35);
+{{ENDTL 14.0}}
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

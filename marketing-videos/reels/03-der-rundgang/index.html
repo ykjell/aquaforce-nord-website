@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>AquaForce-Nord · 03 Der Rundgang</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Barlow Condensed"; font-weight: 600; src: url("assets/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow Condensed"; font-weight: 700; src: url("assets/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow Condensed"; font-weight: 800; src: url("assets/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow Condensed"; font-weight: 800; font-style: italic; src: url("assets/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow Condensed"; font-weight: 900; font-style: italic; src: url("assets/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2"); }
+      :root {
+        --navy: #06192b;
+        --ink: #0a2540;
+        --aqua: #18c8ff;
+        --white: #f4f8fb;
+        --disp: "Barlow Condensed", sans-serif;
+        --body: "Inter", sans-serif;
+        --mono: "JetBrains Mono", monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #06192b; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--body); color: var(--white); }
+      .bgfill { position: absolute; inset: 0; background: var(--navy); }
+
+      /* Footage: untimed wrapper (.shot) carries scale / clip-path, the timed media sits inside */
+      .shot { position: absolute; inset: 0; overflow: hidden; }
+      .shot .cam { position: absolute; inset: 0; }
+      .shot video, .shot img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      .scrim { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+      .scrim.top { background: linear-gradient(180deg, rgba(4, 16, 28, 0.82) 0%, rgba(4, 16, 28, 0.5) 22%, rgba(4, 16, 28, 0) 46%); }
+      .scrim.bot { background: linear-gradient(0deg, rgba(4, 16, 28, 0.7) 0%, rgba(4, 16, 28, 0) 30%); }
+
+      /* Type */
+      .hl { position: absolute; left: 64px; width: 880px; font-family: var(--disp); font-weight: 800; text-transform: uppercase; font-size: 138px; line-height: 0.92; letter-spacing: -0.012em; color: var(--white); text-shadow: 0 4px 34px rgba(3, 12, 22, 0.55); }
+      .hl .ln { display: block; overflow: hidden; padding-top: 0.06em; margin-top: -0.06em; }
+      .hl .ln > span { display: inline-block; }
+      .hl em { font-style: normal; color: var(--aqua); }
+      .tag { position: absolute; left: 64px; display: inline-flex; align-items: center; gap: 14px; font-family: var(--mono); font-weight: 700; font-size: 30px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white); }
+      .tag i { display: block; width: 46px; height: 4px; background: var(--aqua); transform-origin: 0 50%; }
+      .chip { position: absolute; display: inline-flex; align-items: center; height: 76px; padding: 0 30px; border-radius: 12px; font-family: var(--disp); font-weight: 800; font-size: 50px; letter-spacing: 0.06em; text-transform: uppercase; }
+      .chip.dark { background: rgba(6, 25, 43, 0.88); color: var(--white); }
+      .chip.aqua { background: var(--aqua); color: var(--navy); }
+
+      /* Brand bug */
+      .bug { position: absolute; left: 64px; top: 190px; }
+      .bug-in { display: flex; align-items: center; gap: 14px; }
+      .bug-mark { width: 44px; height: 44px; }
+      .bug-w { font-family: var(--disp); font-weight: 800; font-style: italic; font-size: 40px; letter-spacing: 0.04em; color: var(--white); text-shadow: 0 2px 14px rgba(3, 12, 22, 0.6); }
+      .bug-w b { font-weight: 800; color: var(--aqua); margin-left: 10px; }
+
+      /* End card */
+      .end { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .end-bg { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 38%, #0d3357 0%, #06192b 62%); }
+      .end-sweep { position: absolute; left: 0; top: 100%; width: 1080px; height: 480px; background: linear-gradient(180deg, #18c8ff 0%, #18c8ff 40%, rgba(24, 200, 255, 0) 100%); margin-top: -240px; }
+      .end-stack { position: absolute; left: 0; top: 520px; width: 1080px; display: flex; flex-direction: column; align-items: center; }
+      .end-mark { width: 150px; height: 150px; }
+      .end-word { margin-top: 30px; font-family: var(--disp); font-weight: 900; font-style: italic; font-size: 212px; line-height: 0.9; letter-spacing: -0.005em; color: var(--white); }
+      .end-clip { display: block; overflow: hidden; padding: 0.04em 0.06em 0 0.02em; }
+      .end-clip > span { display: block; }
+      .end-nord { margin-top: 10px; display: flex; align-items: center; gap: 30px; font-family: var(--disp); font-weight: 700; font-size: 64px; color: var(--aqua); }
+      .end-nord span { letter-spacing: 0.52em; margin-right: -0.52em; padding-left: 0.1em; }
+      .end-nord i { display: block; width: 190px; height: 4px; background: var(--aqua); }
+      .end-nord i:first-child { transform-origin: 100% 50%; }
+      .end-nord i:last-child { transform-origin: 0 50%; margin-left: 30px; }
+      .end-sub { margin-top: 46px; font-family: var(--body); font-weight: 400; font-size: 38px; letter-spacing: 0.02em; color: rgba(244, 248, 251, 0.82); }
+      .end-cta { margin-top: 70px; display: flex; align-items: center; gap: 18px; height: 116px; padding: 0 54px; border-radius: 58px; background: var(--aqua); font-family: var(--disp); font-weight: 800; font-size: 60px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--navy); }
+      .end-cta svg { width: 50px; height: 50px; }
+      .end-note { margin-top: 40px; font-family: var(--mono); font-weight: 700; font-size: 28px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(244, 248, 251, 0.6); }
+      .edge { position: absolute; left: 0; top: 0; width: 40px; height: 1920px; opacity: 0; background: linear-gradient(90deg, #ffffff 0, #18c8ff 12px, rgba(24, 200, 255, 0) 40px); }
+      .num { position: absolute; left: 64px; font-family: var(--disp); font-weight: 900; font-style: italic; font-size: 260px; line-height: 0.85; color: var(--aqua); text-shadow: 0 4px 34px rgba(3, 12, 22, 0.55); }
+      .ring { position: absolute; width: 190px; height: 190px; margin: -95px 0 0 -95px; border: 7px solid var(--aqua); border-radius: 50%; box-shadow: 0 0 0 3px rgba(6, 25, 43, 0.55); }
+
+    </style>
+    <style>
+      .pane { position: absolute; left: 0; width: 1080px; height: 960px; overflow: hidden; }
+      .pane video { position: absolute; left: 0; top: -520px; width: 1080px; height: 1920px; object-fit: cover; }
+      .band { position: absolute; left: 0; top: 850px; width: 1080px; height: 220px; }
+      .band-bg { position: absolute; inset: 0; background: var(--navy); border-top: 6px solid var(--aqua); border-bottom: 6px solid var(--aqua); }
+      .band-t { position: absolute; left: 0; top: 0; width: 1080px; height: 220px; display: flex; align-items: center; justify-content: center; font-family: var(--disp); font-weight: 800; font-size: 122px; letter-spacing: -0.01em; text-transform: uppercase; overflow: hidden; }
+      .band-t span { display: block; }
+      .divider { position: absolute; left: 0; top: 954px; width: 1080px; height: 12px; background: var(--aqua); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.4" data-width="1080" data-height="1920" data-fps="30">
+      <div class="bgfill"></div>
+
+      <!-- S1: synchroner Rundgang – oben Vorher, unten Nachher -->
+      <div class="pane" id="pa" style="top: 0"><div class="cam" id="ca" style="position:absolute;inset:0">
+        <video id="va" class="clip" muted playsinline src="assets/clips/c_walk.mp4" data-start="0" data-duration="8.0" data-media-start="0.3" data-track-index="1"></video>
+      </div></div>
+      <div class="pane" id="pb" style="top: 960px"><div class="cam" id="cb" style="position:absolute;inset:0">
+        <video id="vb" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="0" data-duration="8.0" data-media-start="3.2" data-playback-rate="1.08" data-track-index="2"></video>
+      </div></div>
+      <div id="div" class="clip divider" data-start="0" data-duration="8.0" data-track-index="3"></div>
+      <div id="band" class="clip band" data-start="0" data-duration="2.9" data-track-index="6" data-layout-allow-occlusion>
+        <div class="band-bg" id="band-bg"></div>
+        <div class="band-t"><span id="band-in">Gleicher <em style="font-style:normal;color:var(--aqua)">Rundgang.</em></span></div>
+      </div>
+      <div id="ka" class="clip chip dark" style="left: 64px; top: 290px" data-start="0" data-duration="7.9" data-track-index="7"><span id="ka-in">Vorher</span></div>
+      <div id="kb" class="clip chip aqua" style="left: 64px; top: 1100px" data-start="0" data-duration="7.9" data-track-index="7" data-layout-allow-caption-zone><span id="kb-in">Nachher</span></div>
+
+      <!-- S2: Nachher übernimmt das ganze Bild -->
+      <div class="shot" id="s2"><div class="cam" id="c2">
+        <video id="v2" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="7.5" data-duration="1.5" data-media-start="11.3" data-playback-rate="1.08" data-track-index="4"></video>
+      </div></div>
+      <div class="shot" id="s2b"><div class="cam" id="c2b">
+        <video id="v2b" class="clip" muted playsinline src="assets/clips/b_walk.mp4" data-start="9.0" data-duration="2.5" data-media-start="7.6" data-track-index="4"></video>
+      </div></div>
+      <div class="shot" id="s3"><div class="cam" id="c3">
+        <video id="v3" class="clip" muted playsinline src="assets/clips/a_walk.mp4" data-start="10.9" data-duration="3.3" data-media-start="0.4" data-track-index="5"></video>
+      </div></div>
+      <div id="scrim" class="clip scrim top" data-start="0" data-duration="14.6" data-track-index="5"></div>
+      <div class="edge" id="e3" data-layout-ignore></div>
+
+      <div id="t2" class="clip hl" style="top: 300px" data-start="9.0" data-duration="2.0" data-track-index="6">
+        <span class="ln"><span id="t2a">So sieht</span></span>
+        <span class="ln"><span id="t2b"><em>fertig</em> aus.</span></span>
+      </div>
+      <div id="g3" class="clip tag" style="top: 320px" data-start="11.2" data-duration="3.4" data-track-index="7"><i id="g3-i"></i><span id="g3-in">Terrasse &amp; Gehweg</span></div>
+      <div id="t3" class="clip hl" style="top: 390px" data-start="11.2" data-duration="3.4" data-track-index="6">
+        <span class="ln"><span id="t3a">Jeder Stein.</span></span>
+        <span class="ln"><span id="t3b"><em>Jede Fuge.</em></span></span>
+      </div>
+
+      <div id="bug" class="clip bug" data-start="0" data-duration="14.6" data-track-index="8">
+        <div class="bug-in" id="bug-in">
+          <svg class="bug-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
+          <span class="bug-w">AQUAFORCE<b>NORD</b></span>
+        </div>
+      </div>
+
+      <div id="end" class="clip end" data-start="14.0" data-duration="3.4" data-track-index="9">
+        <div class="end-bg" id="end-bg"></div>
+        <div class="end-sweep" id="end-sweep" data-layout-ignore></div>
+        <div class="end-stack">
+          <svg class="end-mark" id="end-mark" viewBox="0 0 48 48"><path d="M24 4C24 4 9 21 9 31a15 15 0 0 0 30 0C39 21 24 4 24 4Z" fill="#18C8FF"/><path d="M15 33h18M18 27h12" stroke="#06192B" stroke-width="3.4" stroke-linecap="round"/></svg>
+          <div class="end-word"><span class="end-clip"><span id="end-w1">AQUAFORCE</span></span></div>
+          <div class="end-nord"><i id="end-l1"></i><span id="end-w2">NORD</span><i id="end-l2"></i></div>
+          <div class="end-sub" id="end-sub">Professionelle Hochdruckreinigung</div>
+          <div class="end-cta" id="end-cta"><span>Jetzt Angebot anfragen</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="end-note" id="end-note">Terrassen · Einfahrten · Gehwege</div>
+        </div>
+      </div>
+    </div>
+    <script>
+
+      const tl = gsap.timeline({ paused: true });
+      const up = (sel, t, st = 0.07) => tl.fromTo(sel, { yPercent: 112 }, { yPercent: 0, duration: 0.55, ease: "expo.out", stagger: st }, t);
+      const out = (sel, t) => tl.to(sel, { yPercent: -112, duration: 0.28, ease: "power3.in", stagger: 0.04 }, t);
+      const pop = (sel, t, dx = -24) => { tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.2 }, t); tl.fromTo(sel + "-in", { x: dx }, { x: 0, duration: 0.45, ease: "power3.out" }, t); };
+      const hide = (sel, t) => tl.to(sel, { opacity: 0, duration: 0.2, ease: "power2.in" }, t);
+      // Wasser-Wisch: Shot wird von rechts nach links freigelegt, eine Aqua-Kante läuft mit
+      const sweep = (shot, edge, t, d = 0.55) => {
+        tl.fromTo(shot, { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: d, ease: "power2.inOut" }, t);
+        tl.fromTo(edge, { x: 1080, opacity: 1 }, { x: -40, opacity: 1, duration: d, ease: "power2.inOut" }, t);
+        tl.set(edge, { opacity: 0 }, t + d);
+      };
+
+      // S1: Band mit der Ansage steht ab Frame 0 und zieht sich zur Trennlinie zusammen
+      tl.to("#band-in", { yPercent: -130, duration: 0.3, ease: "power3.in" }, 2.3);
+      tl.to("#band-bg", { scaleY: 0.05, duration: 0.4, ease: "power3.inOut" }, 2.45);
+      tl.fromTo("#ca", { scale: 1.06 }, { scale: 1.0, duration: 8, ease: "none" }, 0);
+      tl.fromTo("#cb", { scale: 1.06 }, { scale: 1.0, duration: 8, ease: "none" }, 0);
+
+      // S2: die Nachher-Hälfte läuft weiter und übernimmt das ganze Bild
+      tl.fromTo("#s2", { clipPath: "inset(50% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.fromTo("#c2", { y: 440 }, { y: 0, duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.to("#div", { y: -980, duration: 0.6, ease: "power3.inOut" }, 7.5);
+      tl.to(["#ka", "#kb"], { opacity: 0, duration: 0.2 }, 7.45);
+      // Schnitt auf das Ergebnis in der Sonne
+      tl.fromTo("#c2b", { scale: 1.2, transformOrigin: "50% 60%" }, { scale: 1.05, duration: 2.1, ease: "power3.out" }, 9.0);
+      up(["#t2a", "#t2b"], 9.1);
+      out(["#t2a", "#t2b"], 10.6);
+
+      // S3: Terrasse, sauber
+      sweep("#s3", "#e3", 10.9, 0.5);
+      tl.fromTo("#c3", { scale: 1.12, transformOrigin: "50% 55%" }, { scale: 1.03, duration: 3.3, ease: "power1.out" }, 10.9);
+      tl.fromTo("#g3-i", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 11.3);
+      tl.fromTo("#g3-in", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 11.35);
+      up(["#t3a", "#t3b"], 11.35);
+
+      // ---- Endkarte
+      tl.fromTo("#end-bg", { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.inOut" }, 14.0);
+      tl.fromTo("#end-sweep", { y: 0 }, { y: -2400, duration: 0.5, ease: "power3.inOut" }, 14.0);
+      tl.fromTo("#end-mark", { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.6)" }, 14.0 + 0.34);
+      tl.fromTo("#end-w1", { yPercent: 105 }, { yPercent: 0, duration: 0.6, ease: "expo.out" }, 14.0 + 0.42);
+      tl.fromTo("#end-w2", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 14.0 + 0.62);
+      tl.fromTo(["#end-l1", "#end-l2"], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 14.0 + 0.62);
+      tl.fromTo("#end-sub", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 14.0 + 0.9);
+      tl.fromTo("#end-cta", { opacity: 0, y: 34, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 14.0 + 1.15);
+      tl.fromTo("#end-note", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 14.0 + 1.45);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+{{HEAD AquaForce-Nord · 01 Die Linie}}
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.4" data-width="1080" data-height="1920" data-fps="30">
+      <div class="bgfill"></div>
+
+      <div class="shot" id="s1"><div class="cam" id="c1">
+        <video id="v1" class="clip" muted playsinline src="assets/clips/e_pov.mp4" data-start="0" data-duration="2.7" data-media-start="1.0" data-track-index="1"></video>
+      </div></div>
+      <div class="shot" id="s2"><div class="cam" id="c2">
+        <video id="v2" class="clip" muted playsinline src="assets/clips/g_pov.mp4" data-start="2.7" data-duration="3.0" data-media-start="2.0" data-track-index="2"></video>
+      </div></div>
+      <div class="shot" id="s3"><div class="cam" id="c3">
+        <video id="v3" class="clip" muted playsinline src="assets/clips/e_pov.mp4" data-start="5.3" data-duration="2.4" data-media-start="7.0" data-playback-rate="2.5" data-track-index="1"></video>
+      </div></div>
+      <div class="shot" id="s4"><div class="cam" id="c4">
+        <video id="v4" class="clip" muted playsinline src="assets/clips/g_edge.mp4" data-start="7.7" data-duration="2.7" data-media-start="2.0" data-track-index="2"></video>
+      </div></div>
+      <div class="shot" id="s5"><div class="cam" id="c5">
+        <img id="p5" class="clip" src="assets/img/split.jpg" data-start="10.4" data-duration="3.9" data-track-index="1" />
+      </div></div>
+
+      <div id="scrim" class="clip scrim top" data-start="0" data-duration="14.6" data-track-index="5"></div>
+
+      <div id="t1" class="clip hl" style="top: 300px; font-size: 132px" data-start="0" data-duration="2.7" data-track-index="6">
+        <span class="ln"><span id="t1a">Wie viel Dreck</span></span>
+        <span class="ln"><span id="t1b">steckt in Ihrem</span></span>
+        <span class="ln"><span id="t1c"><em>Pflaster?</em></span></span>
+      </div>
+
+      <div id="t3" class="clip hl" style="top: 300px" data-start="5.5" data-duration="2.2" data-track-index="6">
+        <span class="ln"><span id="t3a">Bahn für <em>Bahn.</em></span></span>
+      </div>
+
+      <div id="t5" class="clip hl" style="top: 300px" data-start="10.9" data-duration="3.7" data-track-index="6">
+        <span class="ln"><span id="t5a">Derselbe</span></span>
+        <span class="ln"><span id="t5b"><em>Stein.</em></span></span>
+      </div>
+      <div id="k5a" class="clip chip aqua" style="left: 96px; top: 1150px" data-start="11.5" data-duration="3.1" data-track-index="7"><span id="k5a-in">Nachher</span></div>
+      <div id="k5b" class="clip chip dark" style="left: 640px; top: 1150px" data-start="11.7" data-duration="2.9" data-track-index="7"><span id="k5b-in">Vorher</span></div>
+{{BUG 0 14.6}}
+{{ENDCARD 14.0}}
+    </div>
+    <script>
+{{HELPERS}}
+
+      // S1: Hook – Lanze zieht die Linie. Zeile 1+2 stehen ab Frame 0, die Frage landet sofort.
+      tl.fromTo("#c1", { scale: 1.42, transformOrigin: "66% 46%" }, { scale: 1.2, duration: 2.7, ease: "power2.out" }, 0);
+      tl.fromTo("#t1c", { yPercent: 112 }, { yPercent: 0, duration: 0.5, ease: "expo.out" }, 0.25);
+      out(["#t1a", "#t1b", "#t1c"], 2.38);
+
+      // S2: Makro, nass – Punch-in auf die Düse
+      tl.fromTo("#c2", { scale: 1.25, transformOrigin: "62% 34%" }, { scale: 1.33, duration: 1.3, ease: "none" }, 2.7);
+      tl.set("#c2", { scale: 1.95, transformOrigin: "60% 30%" }, 4.0);
+      tl.to("#c2", { scale: 2.05, duration: 1.3, ease: "none" }, 4.0);
+
+      // S3: Zeitraffer – Wisch von rechts (Strahlrichtung)
+      tl.fromTo("#s3", { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.38, ease: "power3.inOut" }, 5.3);
+      tl.fromTo("#c3", { scale: 1.3, transformOrigin: "60% 45%" }, { scale: 1.12, duration: 2.4, ease: "power2.out" }, 5.3);
+      up("#t3a", 5.6);
+      out("#t3a", 7.4);
+
+      // S4: Kante am Rasen – beschleunigt in den Reveal
+      tl.fromTo("#c4", { scale: 1.18, transformOrigin: "50% 40%" }, { scale: 1.26, duration: 2.35, ease: "none" }, 7.7);
+      tl.to("#c4", { scale: 1.9, duration: 0.35, ease: "power3.in" }, 10.05);
+
+      // S5: Reveal – Foto zieht auf, Linie bleibt stehen
+      tl.fromTo("#c5", { scale: 1.9, transformOrigin: "47% 50%" }, { scale: 1.06, duration: 1.5, ease: "expo.out" }, 10.4);
+      tl.to("#c5", { scale: 1.0, duration: 2.4, ease: "none" }, 11.9);
+      up(["#t5a", "#t5b"], 10.95);
+      tl.fromTo("#k5a-in", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 11.5);
+      tl.fromTo("#k5a", { opacity: 0 }, { opacity: 1, duration: 0.25 }, 11.5);
+      tl.fromTo("#k5b-in", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 11.7);
+      tl.fromTo("#k5b", { opacity: 0 }, { opacity: 1, duration: 0.25 }, 11.7);
+
+{{ENDTL 14.0}}
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

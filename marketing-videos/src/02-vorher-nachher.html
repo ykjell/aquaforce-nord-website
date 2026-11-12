@@ -1,0 +1,123 @@
+{{HEAD AquaForce-Nord · 02 Vorher / Nachher}}
+    <style>
+      .handle { position: absolute; left: 0; top: 0; width: 8px; height: 1920px; margin-left: -4px; background: #fff; box-shadow: 0 0 24px rgba(3, 12, 22, 0.5); }
+      .knob { position: absolute; left: -56px; top: 1010px; width: 120px; height: 120px; border-radius: 50%; background: var(--aqua); border: 8px solid #fff; display: flex; align-items: center; justify-content: center; }
+      .knob svg { width: 70px; height: 70px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.0" data-width="1080" data-height="1920" data-fps="30">
+      <div class="bgfill"></div>
+
+      <!-- S1: Seitenweg – Schieberegler (Vorher unten, Nachher darüber, per clip-path) -->
+      <div class="shot" id="s1a"><div class="cam" id="c1a">
+        <img id="p1a" class="clip" src="assets/img/side_before.jpg" data-start="0" data-duration="4.75" data-track-index="1" />
+      </div></div>
+      <div class="shot" id="s1b"><div class="cam" id="c1b">
+        <img id="p1b" class="clip" src="assets/img/side_after.jpg" data-start="0" data-duration="4.75" data-track-index="2" />
+      </div></div>
+      <div id="h1" class="clip" style="position:absolute;left:0;top:0;width:1080px;height:1920px" data-start="0" data-duration="4.75" data-track-index="3" data-layout-ignore>
+        <div class="handle" id="h1-in"><div class="knob"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+      </div>
+
+      <!-- S2: Terrasse -->
+      <div class="shot" id="s2a"><div class="cam" id="c2a">
+        <img id="p2a" class="clip" src="assets/img/terrace_before.jpg" data-start="4.2" data-duration="2.6" data-track-index="1" />
+      </div></div>
+      <div class="shot" id="s2b"><div class="cam" id="c2b">
+        <img id="p2b" class="clip" src="assets/img/terrace_after.jpg" data-start="6.0" data-duration="3.3" data-track-index="2" />
+      </div></div>
+
+      <!-- S3: echte Grenze mitten im Auftrag -->
+      <div class="shot" id="s3"><div class="cam" id="c3">
+        <video id="v3" class="clip" muted playsinline src="assets/clips/f_half.mp4" data-start="8.7" data-duration="2.9" data-media-start="1.0" data-track-index="1"></video>
+      </div></div>
+
+      <!-- S4: Ergebnis in der Sonne -->
+      <div class="shot" id="s4"><div class="cam" id="c4">
+        <video id="v4" class="clip" muted playsinline src="assets/clips/b_walk.mp4" data-start="11.0" data-duration="2.9" data-media-start="7.6" data-track-index="2"></video>
+      </div></div>
+
+      <div id="scrim" class="clip scrim top" data-start="0" data-duration="14.2" data-track-index="5"></div>
+      <div class="edge" id="e1" data-layout-ignore></div>
+      <div class="edge" id="e2" data-layout-ignore></div>
+      <div class="edge" id="e3" data-layout-ignore></div>
+      <div class="edge" id="e4" data-layout-ignore></div>
+
+      <div id="t1" class="clip hl" style="top: 300px" data-start="0" data-duration="4.2" data-track-index="6">
+        <span class="ln"><span id="t1a">Gleicher Weg.</span></span>
+        <span class="ln"><span id="t1b"><em>Nur sauber.</em></span></span>
+      </div>
+      <div id="k1a" class="clip chip dark" style="left: 64px; top: 1200px" data-start="0" data-duration="4.2" data-track-index="7"><span id="k1a-in">Vorher</span></div>
+      <div id="k1b" class="clip chip aqua" style="left: 760px; top: 1200px" data-start="0" data-duration="4.2" data-track-index="7"><span id="k1b-in">Nachher</span></div>
+
+      <div id="k2a" class="clip chip dark" style="left: 64px; top: 320px" data-start="4.5" data-duration="1.6" data-track-index="7"><span id="k2a-in">Vorher</span></div>
+      <div id="k2b" class="clip chip aqua" style="left: 64px; top: 320px" data-start="6.45" data-duration="2.2" data-track-index="7"><span id="k2b-in">Nachher</span></div>
+      <div id="t2" class="clip hl" style="top: 430px" data-start="4.5" data-duration="4.2" data-track-index="6">
+        <span class="ln"><span id="t2a">Die Terrasse.</span></span>
+      </div>
+
+      <div id="g3" class="clip tag" style="top: 320px" data-start="8.9" data-duration="2.1" data-track-index="7"><i id="g3-i"></i><span id="g3-in">Mitten im Auftrag</span></div>
+      <div id="t3" class="clip hl" style="top: 390px" data-start="8.9" data-duration="2.1" data-track-index="6">
+        <span class="ln"><span id="t3a">Die Grenze</span></span>
+        <span class="ln"><span id="t3b">ist <em>echt.</em></span></span>
+      </div>
+
+      <div id="t4" class="clip hl" style="top: 300px" data-start="11.3" data-duration="2.9" data-track-index="6">
+        <span class="ln"><span id="t4a">Sauber bis</span></span>
+        <span class="ln"><span id="t4b">in die <em>Fuge.</em></span></span>
+      </div>
+{{BUG 0 14.2}}
+{{ENDCARD 13.6}}
+    </div>
+    <script>
+{{HELPERS}}
+
+      // S1: Schieberegler. Frame 0 = halb/halb (der Hook), dann zeigt er erst das Problem, dann das Ergebnis.
+      const P = { x: 540 };
+      const applySplit = () => {
+        gsap.set("#s1b", { clipPath: "inset(0px 0px 0px " + P.x.toFixed(2) + "px)" });
+        gsap.set("#h1-in", { x: P.x });
+      };
+      tl.set(P, { x: 540, onUpdate: applySplit }, 0);
+      tl.to(P, { x: 930, duration: 1.0, ease: "power2.inOut", onUpdate: applySplit }, 0.45);
+      tl.to(P, { x: 110, duration: 1.5, ease: "power3.inOut", onUpdate: applySplit }, 1.75);
+      tl.to(P, { x: 150, duration: 0.9, ease: "sine.inOut", onUpdate: applySplit }, 3.3);
+      tl.fromTo(["#c1a", "#c1b"], { scale: 1.1, transformOrigin: "45% 55%" }, { scale: 1.0, duration: 4.75, ease: "power1.out" }, 0);
+      tl.to("#k1b", { opacity: 0.0, duration: 0.25 }, 0.7);
+      tl.to("#k1b", { opacity: 1, duration: 0.25 }, 2.2);
+      tl.to("#k1a", { opacity: 0, duration: 0.25 }, 2.5);
+      out(["#t1a", "#t1b"], 3.9);
+
+      // S2: Terrasse – Vorher steht, Wasser-Wisch bringt Nachher
+      sweep("#s2a", "#e1", 4.2, 0.5);
+      tl.fromTo("#c2a", { scale: 1.16, transformOrigin: "50% 40%" }, { scale: 1.06, duration: 2.6, ease: "power1.out" }, 4.2);
+      up("#t2a", 4.55);
+      pop("#k2a", 4.6);
+      hide("#k2a", 5.9);
+      sweep("#s2b", "#e2", 6.0, 0.6);
+      tl.fromTo("#c2b", { scale: 1.2, transformOrigin: "50% 45%" }, { scale: 1.06, duration: 2.9, ease: "power2.out" }, 6.0);
+      pop("#k2b", 6.45);
+      out("#t2a", 8.38);
+      hide("#k2b", 8.42);
+
+      // S3: die echte Linie
+      sweep("#s3", "#e3", 8.7, 0.5);
+      tl.fromTo("#c3", { scale: 1.22, transformOrigin: "50% 62%" }, { scale: 1.08, duration: 2.5, ease: "power2.out" }, 8.7);
+      tl.fromTo("#g3-i", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 9.0);
+      tl.fromTo("#g3-in", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 9.05);
+      up(["#t3a", "#t3b"], 9.05);
+      out(["#t3a", "#t3b"], 10.7);
+      hide("#g3-in", 10.75);
+      tl.to("#g3-i", { scaleX: 0, duration: 0.2 }, 10.75);
+
+      // S4: Ergebnis
+      sweep("#s4", "#e4", 11.0, 0.5);
+      tl.fromTo("#c4", { scale: 1.14, transformOrigin: "50% 60%" }, { scale: 1.04, duration: 2.9, ease: "power1.out" }, 11.0);
+      up(["#t4a", "#t4b"], 11.4);
+{{ENDTL 13.6}}
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

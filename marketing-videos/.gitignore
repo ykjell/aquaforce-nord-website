@@ -1,0 +1,6 @@
+assets/clips/
+reels/*/assets
+node_modules/
+.hyperframes/
+reels/*/renders/
+reels/*/.hyperframes/
