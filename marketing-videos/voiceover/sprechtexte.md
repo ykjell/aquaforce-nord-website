@@ -15,7 +15,7 @@ Die Zeiten in Klammern sind die Startpunkte im Video (nur zur Orientierung, nich
 
 (5,5) Wir holen ihn raus. Bahn für Bahn.
 
-(7,8) Mit Hochdruck. Bis tief in jede Fuge.
+(7,8) Mit Hochdruck. Und mit Gefühl.
 
 (10,7) Das hier ist derselbe Stein. Links gereinigt. Rechts nicht.
 
@@ -31,7 +31,7 @@ Die Zeiten in Klammern sind die Startpunkte im Video (nur zur Orientierung, nich
 
 (8,9) Mitten im Auftrag. Die Grenze ist echt.
 
-(11,3) Sauber. Bis in die letzte Fuge.
+(11,3) Sauber. Auf der ganzen Fläche.
 
 (14,0) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
@@ -45,7 +45,7 @@ Die Zeiten in Klammern sind die Startpunkte im Video (nur zur Orientierung, nich
 
 (9,2) So sieht fertig aus.
 
-(11,3) Jeder Stein. Jede Fuge. Sauber.
+(11,3) Jeder Stein. Jeder Meter. Sauber.
 
 (14,4) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
@@ -55,7 +55,7 @@ Die Zeiten in Klammern sind die Startpunkte im Video (nur zur Orientierung, nich
 
 (3,4) Terrassen. Einfahrten. Gehwege. Pflaster.
 
-(6,7) Gründlich gereinigt. Bis in die Fuge.
+(6,7) Gründlich gereinigt. Stein für Stein.
 
 (9,8) Für ein Zuhause, das wieder aussieht wie neu.
 

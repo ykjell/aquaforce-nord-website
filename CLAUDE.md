@@ -10,6 +10,7 @@ Hochdruckreinigung (Terrassen, Einfahrten, Gehwege, Pflaster). Inhaber-Angaben v
 - Markenfarben in den Reels: Navy `#06192B`, Aqua `#18C8FF`, Weiß `#F4F8FB`; Schrift Barlow Condensed / Inter
 
 Diese Angaben in Werbemitteln (Videos, Website, Anzeigen) verwenden. Keine Kundenzahlen, Garantien oder
-Aussagen wie „ohne Chemie" erfinden. Sprache gegenüber dem Nutzer: Deutsch.
+Aussagen wie „ohne Chemie" erfinden. Nicht mit „bis in die Fuge" o. Ä. werben: Kunden wollen meist nicht, dass die
+Fugen ausgespült werden (Wunsch des Nutzers, 2026-11-13). Sprache gegenüber dem Nutzer: Deutsch.
 
 Reels: siehe `marketing-videos/README.md` (HyperFrames; `node build.mjs`, dann `./hf.sh render reels/<name>`).
