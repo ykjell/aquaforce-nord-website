@@ -29,7 +29,7 @@ build.mjs               setzt Kopf, Signet, Endkarte ein → reels/<name>/index.
 prepare-assets.sh       Originalmaterial → assets/clips (HDR→SDR, Grade, 9:16)
 assets/img, fonts       Fotos (gegradet), Schriften, GSAP
 renders/                fertige MP4s (stumm)
-renders/mit-ton/        mit Sprecher (eigene Stimme) + Lanzen-Atmo
+renders/mit-ton/        mit Sprecher (eigene Stimme), ohne Originalton
 voiceover/              Sprechtexte, Originalaufnahmen, mix.py (legt Ton auf die Schnitte)
 ```
 

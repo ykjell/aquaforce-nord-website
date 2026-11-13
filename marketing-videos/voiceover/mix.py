@@ -6,7 +6,7 @@
 Pro Video: Sprechabschnitte (Quelle von–bis in der Aufnahme) und ihre Startzeit im Video.
 Die Abschnitte stammen aus der Pausen-Erkennung (ffmpeg silencedetect), nicht aus einem Transkript.
 Stimmkette: Hochpass, leichte Rauschminderung, Entmulmen, Präsenz, Luft, De-Esser, Kompression, -15 LUFS.
-Unter Reinigungsszenen liegt leise der Originalton der Lanze (bed).
+Kein Originalton der Aufnahmen: nur die Stimme (Wunsch des Inhabers). Die bed-Liste bleibt leer.
 """
 import subprocess, sys, os
 
@@ -24,7 +24,7 @@ V = {
     1: ("01-die-linie", 22.6, [
         (3.147, 6.396, 0.20), (6.701, 8.485, 3.70), (8.996, 11.073, 5.75), (11.713, 14.693, 8.05),
         (15.291, 17.993, 11.35), (18.237, 19.303, 14.20), (19.496, 20.560, 15.35), (21.619, 27.307, 16.60),
-    ], [(POV_SUN, 1.0, 0.0, 11.4)]),
+    ], []),
     2: ("02-vorher-nachher", 18.4, [
         (0.768, 5.221, 0.20), (5.484, 8.963, 4.85), (9.548, 12.523, 8.60), (12.799, 15.000, 11.75),
         (15.630, 19.474, 14.15),
@@ -36,12 +36,12 @@ V = {
     4: ("04-markenfilm", 17.2, [
         (3.621, 6.168, 0.30), (6.658, 11.023, 3.40), (11.353, 12.329, 8.00), (12.798, 15.228, 9.60),
         (16.096, 19.649, 12.90),
-    ], [(POV_SUN, 3.0, 3.3, 6.4)]),
+    ], []),
     5: ("05-drei-zeichen", 23.2, [
         (0.863, 3.303, 0.20), (3.707, 4.347, 3.40), (4.603, 6.881, 4.20), (7.584, 8.298, 7.00),
         (8.716, 11.544, 7.85), (12.149, 15.335, 10.95), (16.169, 16.795, 14.50), (17.002, 20.422, 15.30),
         (21.204, 25.035, 18.90),
-    ], [(POV_WET, 4.0, 14.3, 16.6)]),
+    ], []),
 }
 
 
