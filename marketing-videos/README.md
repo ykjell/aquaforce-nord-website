@@ -6,7 +6,7 @@ gebaut mit [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP → MP4). 
 
 | Datei | Konzept | Länge | Hook (Frame 0) |
 |---|---|---|---|
-| `renders/01-die-linie.mp4` | Satisfying-POV: die Lanze zieht die Linie, Reveal „Derselbe Stein." | 18,6 s | „Wie viel Dreck steckt in Ihrem Pflaster?" |
+| `renders/01-die-linie.mp4` | Satisfying-POV: die Lanze zieht die Linie, Reveal „Derselbe Stein." | 21,8 s | „Wie viel Dreck steckt in Ihrem Pflaster?" |
 | `renders/02-vorher-nachher.mp4` | Schieberegler + Wasser-Wisch: Weg, Terrasse, echte Grenze | 18,2 s | Halb/halb-Bild mit Regler |
 | `renders/03-der-rundgang.mp4` | Synchroner Split-Screen: derselbe Rundgang vorher/nachher | 18,6 s | „Gleicher Rundgang." |
 | `renders/04-markenfilm.mp4` | Markenfilm: Profi in Zeitlupe, Leistungen, Fenster wird zur Welt | 17,2 s | „Keine halben Sachen." |
@@ -28,7 +28,9 @@ src/0X-….html           je ein Reel (Markup + GSAP-Timeline)
 build.mjs               setzt Kopf, Signet, Endkarte ein → reels/<name>/index.html
 prepare-assets.sh       Originalmaterial → assets/clips (HDR→SDR, Grade, 9:16)
 assets/img, fonts       Fotos (gegradet), Schriften, GSAP
-renders/                fertige MP4s
+renders/                fertige MP4s (stumm)
+renders/mit-ton/        mit Sprecher (eigene Stimme) + Lanzen-Atmo
+voiceover/              Sprechtexte, Originalaufnahmen, mix.py (legt Ton auf die Schnitte)
 ```
 
 `assets/clips/` (ca. 290 MB) liegt nicht im Repo; mit `prepare-assets.sh` aus dem Originalmaterial neu erzeugen.
