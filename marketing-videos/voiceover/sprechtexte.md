@@ -1,76 +1,61 @@
-# AquaForce-Nord · Sprechtexte für die 5 Reels
+# AquaForce-Nord · Sprechtexte für die 5 Reels (Fassung 3: gesprochene Sprache)
 
-Stimme: männlich, Anfang 40, mitteltiefer Bariton, warm, ruhig-souverän, Hochdeutsch.
-Tempo: ca. 145 Wörter pro Minute (normale Geschwindigkeit, nicht beschleunigen).
-Pro Video EINE Audiodatei erzeugen. Jede Zeile ist ein eigener Absatz = deutliche Pause danach.
-Zahlen und Markenname genau so sprechen, wie sie dastehen.
+Für die eigene Stimme des Inhabers. Ganze Sätze, wie man sie einem Kunden am Gartenzaun sagt.
+Jeder Absatz ist ein Atemzug; dazwischen kurz Luft holen. Wortlaut darf frei angepasst werden,
+solange Länge und Reihenfolge ungefähr bleiben. Keine Aussagen zur Fugenreinigung.
 
-Die Zeiten in Klammern sind die Startpunkte im Video (nur zur Orientierung, nicht mitsprechen).
+Die Zeiten in Klammern sind ungefähre Startpunkte im Video (nicht mitsprechen).
 
 ## Video 1 – Die Linie (18,6 s)
 
-(0,2) Wie viel Dreck steckt in Ihrem Pflaster?
+(0,2) Wissen Sie eigentlich, wie viel Dreck in Ihrem Pflaster steckt?
 
-(2,9) Mehr, als Sie denken. Schauen Sie mal hin.
+(3,4) Meistens mehr, als man denkt. Wir holen das mit Hochdruck wieder raus – Bahn für Bahn, und trotzdem schonend für Ihre Steine.
 
-(5,5) Wir holen ihn raus. Bahn für Bahn.
+(10,6) Und das hier ist tatsächlich derselbe Stein: links gereinigt, rechts noch nicht.
 
-(7,8) Mit Hochdruck. Und mit Gefühl.
-
-(10,7) Das hier ist derselbe Stein. Links gereinigt. Rechts nicht.
-
-(14,4) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
+(14,4) Das Ganze gibt's bei AquaForce-Nord schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
 ## Video 2 – Vorher / Nachher (18,2 s)
 
-(0,3) Gleicher Weg. Gleiche Steine. Der einzige Unterschied: Wir waren da.
+(0,3) Derselbe Weg, dieselben Steine – der einzige Unterschied: Wir waren da.
 
-(4,5) Die Terrasse. Vorher.
+(4,5) So sah die Terrasse vorher aus, und so sieht sie jetzt aus.
 
-(6,3) Und so sieht sie danach aus.
+(8,9) Mitten im Auftrag sieht man die Grenze richtig deutlich. Und am Ende ist die ganze Fläche sauber.
 
-(8,9) Mitten im Auftrag. Die Grenze ist echt.
-
-(11,3) Sauber. Auf der ganzen Fläche.
-
-(14,0) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
+(14,0) AquaForce-Nord – schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
 ## Video 3 – Der Rundgang (18,6 s)
 
-(0,2) Gleicher Rundgang. Zweimal gefilmt.
+(0,2) Wir sind denselben Rundgang zweimal gegangen: oben vor der Reinigung, unten danach.
 
-(2,9) Oben vorher. Unten nachher. Derselbe Weg, dieselben Steine. Nichts gestellt.
+(5,0) Gleicher Weg, gleiche Steine – und nichts davon ist gestellt.
 
-(7,6) Und jetzt in groß.
+(8,2) So sieht das aus, wenn wir fertig sind: jeder Stein sauber, auf der ganzen Fläche.
 
-(9,2) So sieht fertig aus.
-
-(11,3) Jeder Stein. Jeder Meter. Sauber.
-
-(14,4) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
+(14,4) AquaForce-Nord – schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
 ## Video 4 – Markenfilm (17,2 s)
 
-(0,3) Bei AquaForce-Nord gibt es keine halben Sachen.
+(0,3) Bei AquaForce-Nord machen wir keine halben Sachen.
 
-(3,4) Terrassen. Einfahrten. Gehwege. Pflaster.
+(3,4) Ob Terrasse, Einfahrt oder Gehweg – wir reinigen Ihr Pflaster gründlich, Stein für Stein.
 
-(6,7) Gründlich gereinigt. Stein für Stein.
+(9,5) Damit Ihr Zuhause wieder aussieht wie neu.
 
-(9,8) Für ein Zuhause, das wieder aussieht wie neu.
-
-(13,0) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
+(13,0) Und das schon ab zwei Euro neunundvierzig pro Quadratmeter.
 
 ## Video 5 – Drei Zeichen (22,8 s)
 
 (0,2) Drei Zeichen, dass Ihr Pflaster überfällig ist.
 
-(3,5) Erstens. Aus den Fugen wächst Unkraut. Überall.
+(3,5) Erstens: Zwischen den Steinen wächst überall Unkraut.
 
-(7,3) Zweitens. Der Stein hat seine echte Farbe verloren.
+(7,2) Zweitens: Der Stein hat längst nicht mehr seine eigentliche Farbe.
 
-(11,1) Drittens. Sie sehen es selbst schon gar nicht mehr.
+(11,0) Und drittens: Es fällt Ihnen selbst schon gar nicht mehr auf.
 
-(14,6) Die Lösung: Hochdruck vom Profi. Und alle drei sind weg.
+(14,6) Die Lösung: einmal Hochdruck vom Profi, und alle drei Probleme sind weg.
 
-(18,6) AquaForce-Nord. Schon ab zwei Euro neunundvierzig pro Quadratmeter.
+(18,6) Bei AquaForce-Nord schon ab zwei Euro neunundvierzig pro Quadratmeter.
