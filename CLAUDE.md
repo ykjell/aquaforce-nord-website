@@ -5,7 +5,8 @@ Hochdruckreinigung (Terrassen, Einfahrten, Gehwege, Pflaster). Inhaber-Angaben v
 - Telefon: +49 176 438 57587
 - E-Mail: info@aquaforce-nord.de
 - Website: www.aquaforce-nord.de
-- Preisangebot: Pflasterreinigung „schon ab 2,49 € pro m²" (vom Nutzer gesetzt)
+- Einsatzgebiet: Kiel und Umgebung
+- Preisangebot: Pflasterreinigung „schon ab 2,49 € pro m²" (vom Nutzer gesetzt; Bruttopreis = Endpreis für den Kunden, „inkl. MwSt." muss nicht dabeistehen)
 - Logo: `marketing-videos/assets/img/logo.png` (freigestellt), `logo_sticker.png` (mit weißer Kontur für Bild-/dunkle Hintergründe)
 - Markenfarben in den Reels: Navy `#06192B`, Aqua `#18C8FF`, Weiß `#F4F8FB`; Schrift Barlow Condensed / Inter
 
