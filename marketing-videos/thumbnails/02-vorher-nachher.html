@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @font-face { font-family: "Barlow Condensed"; font-weight: 800; src: url("../assets/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #06192b; }
+  .img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+  .after { clip-path: inset(0 0 0 540px); }
+  .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,16,28,.86) 0%, rgba(4,16,28,.55) 24%, rgba(4,16,28,0) 44%, rgba(4,16,28,0) 62%, rgba(4,16,28,.7) 100%); }
+  .line { position: absolute; left: 536px; top: 0; width: 8px; height: 1920px; background: #fff; box-shadow: 0 0 24px rgba(3,12,22,.5); }
+  .knob { position: absolute; left: 470px; top: 880px; width: 140px; height: 140px; border-radius: 50%; background: #18c8ff; border: 9px solid #fff; display: flex; align-items: center; justify-content: center; }
+  .knob svg { width: 82px; height: 82px; }
+  h1 { position: absolute; left: 0; top: 300px; width: 1080px; text-align: center; font-family: "Barlow Condensed"; font-weight: 800; font-size: 176px; line-height: .92; text-transform: uppercase; color: #f4f8fb; text-shadow: 0 4px 34px rgba(3,12,22,.6); }
+  h1 em { font-style: normal; color: #18c8ff; }
+  .chip { position: absolute; top: 1090px; height: 104px; padding: 0 40px; border-radius: 16px; display: flex; align-items: center; font-family: "Barlow Condensed"; font-weight: 800; font-size: 72px; letter-spacing: .06em; text-transform: uppercase; }
+  .dark { left: 96px; background: rgba(6,25,43,.9); color: #f4f8fb; }
+  .aqua { left: 660px; background: #18c8ff; color: #06192b; }
+  .logo { position: absolute; left: 330px; top: 1290px; width: 420px; }
+</style>
+</head>
+<body>
+  <img class="img" src="../assets/img/side_before.jpg" />
+  <img class="img after" src="../assets/img/side_after.jpg" />
+  <div class="scrim"></div>
+  <div class="line"></div>
+  <div class="knob"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="#06192B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <h1>Gleicher Weg.<br /><em>Nur sauber.</em></h1>
+  <div class="chip dark">Vorher</div>
+  <div class="chip aqua">Nachher</div>
+  <img class="logo" src="../assets/img/logo_sticker.png" />
+</body>
+</html>
