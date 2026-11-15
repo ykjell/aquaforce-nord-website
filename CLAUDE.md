@@ -15,3 +15,7 @@ Aussagen wie „ohne Chemie" erfinden. Nicht mit „bis in die Fuge" o. Ä. werb
 Fugen ausgespült werden (Wunsch des Nutzers, 2026-11-13). Sprache gegenüber dem Nutzer: Deutsch.
 
 Reels: siehe `marketing-videos/README.md` (HyperFrames; `node build.mjs`, dann `./hf.sh render reels/<name>`).
+
+Bildunterschriften (Wunsch des Nutzers, 2026-11-15): höchstens 5 Hashtags, Standard:
+`#kiel #schleswigholstein #vorhernachher #hochdruckreinigung #pflasterreinigung`. Aufbau: eine kurze erste Zeile,
+dann Ort, Preis, Telefon, Website.
