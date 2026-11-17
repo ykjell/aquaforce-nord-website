@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @font-face { font-family: "Barlow Condensed"; font-weight: 800; src: url("../assets/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #06192b; }
+  .pane { position: absolute; left: 0; width: 1080px; height: 960px; overflow: hidden; }
+  .pane img { position: absolute; left: 0; top: -560px; width: 1080px; height: 1920px; object-fit: cover; }
+  .band { position: absolute; left: 0; top: 820px; width: 1080px; height: 280px; background: #06192b; border-top: 8px solid #18c8ff; border-bottom: 8px solid #18c8ff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Barlow Condensed"; font-weight: 800; text-transform: uppercase; color: #f4f8fb; }
+  .band b { font-size: 132px; line-height: .95; letter-spacing: -.01em; }
+  .band em { font-style: normal; color: #18c8ff; }
+  .chip { position: absolute; left: 64px; height: 96px; padding: 0 36px; border-radius: 14px; display: flex; align-items: center; font-family: "Barlow Condensed"; font-weight: 800; font-size: 66px; letter-spacing: .06em; text-transform: uppercase; }
+  .dark { top: 640px; background: rgba(6,25,43,.9); color: #f4f8fb; }
+  .aqua { top: 1140px; background: #18c8ff; color: #06192b; }
+  .logo { position: absolute; left: 690px; top: 1132px; width: 330px; }
+  .shade { position: absolute; left: 0; top: 0; width: 1080px; height: 960px; background: linear-gradient(180deg, rgba(4,16,28,.55) 0%, rgba(4,16,28,0) 40%); }
+</style>
+</head>
+<body>
+  <div class="pane" style="top:0"><img src="../assets/img/walk_before.jpg" /></div>
+  <div class="pane" style="top:960px"><img src="../assets/img/walk_after.jpg" /></div>
+  <div class="shade"></div>
+  <div class="band"><b>Gleicher <em>Rundgang.</em></b></div>
+  <div class="chip dark">Vorher</div>
+  <div class="chip aqua">Nachher</div>
+  <img class="logo" src="../assets/img/logo_sticker.png" />
+</body>
+</html>
